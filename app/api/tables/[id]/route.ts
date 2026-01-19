@@ -25,7 +25,7 @@ const updateTableSchema = z.object({
  * Get single table details
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -78,6 +78,22 @@ export async function GET(
       return NextResponse.json(
         { error: 'Table not found' },
         { status: 404 }
+      );
+    }
+
+    // Authorization: Verify table belongs to user's restaurant
+    // Require restaurantId to be present - users without restaurant cannot access any tables
+    if (!session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: No restaurant associated with your account' },
+        { status: 403 }
+      );
+    }
+
+    if (table.restaurantId !== session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: You do not have access to this table' },
+        { status: 403 }
       );
     }
 
@@ -139,6 +155,22 @@ export async function PUT(
       return NextResponse.json(
         { error: 'Table not found' },
         { status: 404 }
+      );
+    }
+
+    // Authorization: Verify table belongs to user's restaurant
+    // Require restaurantId to be present - users without restaurant cannot modify any tables
+    if (!session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: No restaurant associated with your account' },
+        { status: 403 }
+      );
+    }
+
+    if (existingTable.restaurantId !== session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: You do not have access to this table' },
+        { status: 403 }
       );
     }
 
@@ -213,7 +245,7 @@ export async function PUT(
  * Delete table (MANAGER only)
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -250,6 +282,22 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Table not found' },
         { status: 404 }
+      );
+    }
+
+    // Authorization: Verify table belongs to user's restaurant
+    // Require restaurantId to be present - users without restaurant cannot delete any tables
+    if (!session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: No restaurant associated with your account' },
+        { status: 403 }
+      );
+    }
+
+    if (table.restaurantId !== session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: You do not have access to this table' },
+        { status: 403 }
       );
     }
 

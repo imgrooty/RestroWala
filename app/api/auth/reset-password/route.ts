@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit';
 
 const resetPasswordSchema = z.object({
   token: z.string().min(1, 'Token is required'),
@@ -24,6 +25,28 @@ const resetPasswordSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting check
+    const identifier = getClientIdentifier(request);
+    const rateLimit = await checkRateLimit(identifier, RATE_LIMITS.RESET_PASSWORD);
+    
+    if (rateLimit.limited) {
+      return NextResponse.json(
+        { 
+          error: 'Too many password reset attempts. Please try again later.',
+          retryAfter: rateLimit.resetIn 
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': rateLimit.resetIn.toString(),
+            'X-RateLimit-Limit': RATE_LIMITS.RESET_PASSWORD.maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimit.resetIn.toString(),
+          }
+        }
+      );
+    }
+
     const body = await request.json();
 
     // Validate input
@@ -46,22 +69,18 @@ export async function POST(request: NextRequest) {
       where: { token }
     });
 
-    if (!resetToken) {
+    // Check if token expired first to prevent timing attacks
+    if (!resetToken || new Date() > resetToken.expires) {
+      // Delete expired token if it exists
+      if (resetToken) {
+        await prisma.verificationToken.delete({
+          where: { token }
+        }).catch(() => {}); // Ignore errors
+      }
+
       return NextResponse.json(
         { error: 'Invalid or expired token' },
-        { status: 404 }
-      );
-    }
-
-    if (new Date() > resetToken.expires) {
-      // Delete expired token
-      await prisma.verificationToken.delete({
-        where: { token }
-      });
-
-      return NextResponse.json(
-        { error: 'Token has expired' },
-        { status: 410 }
+        { status: 400 }
       );
     }
 
@@ -71,9 +90,14 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
+      // Delete token if user doesn't exist
+      await prisma.verificationToken.delete({
+        where: { token }
+      }).catch(() => {});
+      
       return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
+        { error: 'Invalid or expired token' },
+        { status: 400 }
       );
     }
 

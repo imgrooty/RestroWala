@@ -10,7 +10,12 @@ import { z } from "zod";
 const createUserSchema = z.object({
     name: z.string().min(2),
     email: z.string().email(),
-    password: z.string().min(6),
+    password: z
+        .string()
+        .min(8, 'Password must be at least 8 characters')
+        .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+        .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+        .regex(/[0-9]/, 'Password must contain at least one number'),
     role: z.nativeEnum(UserRole),
     phone: z.string().optional(),
 });
@@ -27,7 +32,16 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        // Ensure manager can only see users from their restaurant
+        const restaurantId = session.user.restaurantId;
+        if (!restaurantId) {
+            return NextResponse.json({ error: "No restaurant associated" }, { status: 400 });
+        }
+
         const users = await prisma.user.findMany({
+            where: {
+                restaurantId: restaurantId,
+            },
             select: {
                 id: true,
                 name: true,
@@ -74,6 +88,11 @@ export async function POST(req: NextRequest) {
 
         const { name, email, password, role, phone } = validation.data as z.infer<typeof createUserSchema>;
 
+        const restaurantId = session.user.restaurantId;
+        if (!restaurantId) {
+            return NextResponse.json({ error: "No restaurant associated" }, { status: 400 });
+        }
+
         // Check if email already exists
         const existingUser = await prisma.user.findUnique({
             where: { email: email.toLowerCase() },
@@ -86,10 +105,10 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Hash password
+        // Hash password with strong salt rounds
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        // Create user
+        // Create user associated with manager's restaurant
         const newUser = await prisma.user.create({
             data: {
                 name,
@@ -99,6 +118,7 @@ export async function POST(req: NextRequest) {
                 phone,
                 isActive: true,
                 emailVerified: new Date(), // Auto-verify staff emails
+                restaurantId: restaurantId, // Associate with manager's restaurant
             },
             select: {
                 id: true,

@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { UserRole } from '@/types/prisma';
 import { v4 as uuidv4 } from 'uuid';
+import { tableSchema } from '@/lib/validations';
 
 export async function GET(_request: NextRequest) {
   try {
@@ -46,34 +47,63 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { number, capacity, floor, location } = body;
     const restaurantId = session.user.restaurantId;
 
     if (!restaurantId) {
       return NextResponse.json({ error: 'No restaurant associated' }, { status: 400 });
     }
 
+    // Parse and validate numeric inputs
+    const parsedNumber = parseInt(body.number, 10);
+    const parsedCapacity = parseInt(body.capacity, 10);
+
+    if (Number.isNaN(parsedNumber) || Number.isNaN(parsedCapacity)) {
+      return NextResponse.json(
+        { error: 'Invalid table number or capacity' },
+        { status: 400 }
+      );
+    }
+
+    // Validate input using schema
+    const validation = tableSchema.safeParse({
+      number: parsedNumber,
+      capacity: parsedCapacity,
+      floor: body.floor,
+      location: body.location,
+      status: body.status,
+      waiterId: body.waiterId,
+    });
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const data = validation.data;
+
     // Check if table number exists
     const existing = await prisma.table.findFirst({
       where: {
         restaurantId,
-        number: parseInt(number)
+        number: data.number
       }
     });
 
     if (existing) {
-      return NextResponse.json({ error: `Table ${number} already exists` }, { status: 400 });
+      return NextResponse.json({ error: `Table ${data.number} already exists` }, { status: 400 });
     }
 
     const table = await prisma.table.create({
       data: {
-        number: parseInt(number),
-        capacity: parseInt(capacity),
-        floor,
-        location,
+        number: data.number,
+        capacity: data.capacity,
+        floor: data.floor,
+        location: data.location,
         restaurantId,
         qrCode: uuidv4(), // Unique code for the QR
-        status: 'AVAILABLE'
+        status: data.status || 'AVAILABLE'
       }
     });
 

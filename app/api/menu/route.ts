@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { menuItemSchema } from '@/lib/validations';
 
 export async function GET(request: NextRequest) {
   try {
@@ -159,21 +160,30 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, price, categoryId, model3dUrl, isVegetarian, isVegan, isGlutenFree } = body;
-
-    if (!name || !price || !session.user.restaurantId) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    
+    // Validate price is a valid number
+    const priceValue = parseFloat(body.price);
+    if (isNaN(priceValue)) {
+      return NextResponse.json(
+        { error: 'Invalid price value' },
+        { status: 400 }
+      );
     }
 
-    // Default category if not provided?
-    let targetCategoryId = categoryId;
+    if (!session.user.restaurantId) {
+      return NextResponse.json({ error: 'No restaurant associated' }, { status: 400 });
+    }
+
+    // Determine target category before validation
+    let targetCategoryId = body.categoryId;
     if (!targetCategoryId) {
-      // Find first category
+      // Find first category for this restaurant
       const firstCat = await prisma.category.findFirst({
         where: { restaurantId: session.user.restaurantId }
       });
-      if (firstCat) targetCategoryId = firstCat.id;
-      else {
+      if (firstCat) {
+        targetCategoryId = firstCat.id;
+      } else {
         // Create default category
         const newCat = await prisma.category.create({
           data: {
@@ -184,18 +194,57 @@ export async function POST(request: NextRequest) {
         targetCategoryId = newCat.id;
       }
     }
+    
+    // Use validation schema with the determined categoryId
+    const validation = menuItemSchema.safeParse({
+      ...body,
+      categoryId: targetCategoryId,
+      price: priceValue,
+    });
 
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const data = validation.data;
+
+    // Verify category belongs to user's restaurant
+    const category = await prisma.category.findFirst({
+      where: {
+        id: targetCategoryId,
+        restaurantId: session.user.restaurantId,
+      }
+    });
+
+    if (!category) {
+      return NextResponse.json(
+        { error: 'Invalid category or unauthorized access' },
+        { status: 403 }
+      );
+    }
+
+    // Create menu item with explicitly defined fields to avoid confusion
     const newItem = await prisma.menuItem.create({
       data: {
-        name,
-        description,
-        price: parseFloat(price),
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        discountPrice: data.discountPrice,
+        image: data.image,
+        model3dUrl: data.model3dUrl,
+        model3dFormat: data.model3dFormat,
+        isVegetarian: data.isVegetarian,
+        isVegan: data.isVegan,
+        isGlutenFree: data.isGlutenFree,
+        spiceLevel: data.spiceLevel,
+        calories: data.calories,
+        preparationTime: data.preparationTime,
+        tags: data.tags,
         restaurantId: session.user.restaurantId,
         categoryId: targetCategoryId,
-        model3dUrl,
-        isVegetarian: isVegetarian || false,
-        isVegan: isVegan || false,
-        isGlutenFree: isGlutenFree || false,
         isAvailable: true
       }
     });
