@@ -81,6 +81,14 @@ export async function GET(
       );
     }
 
+    // Authorization: Verify table belongs to user's restaurant
+    if (session.user.restaurantId && table.restaurantId !== session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: You do not have access to this table' },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json({ table });
   } catch (error) {
     console.error('Failed to fetch table:', error);
@@ -139,6 +147,14 @@ export async function PUT(
       return NextResponse.json(
         { error: 'Table not found' },
         { status: 404 }
+      );
+    }
+
+    // Authorization: Verify table belongs to user's restaurant
+    if (session.user.restaurantId && existingTable.restaurantId !== session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: You do not have access to this table' },
+        { status: 403 }
       );
     }
 
@@ -250,6 +266,14 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Table not found' },
         { status: 404 }
+      );
+    }
+
+    // Authorization: Verify table belongs to user's restaurant
+    if (session.user.restaurantId && table.restaurantId !== session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: You do not have access to this table' },
+        { status: 403 }
       );
     }
 
