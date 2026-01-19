@@ -18,10 +18,10 @@ import { Card, CardContent } from "@/components/ui/card";
 
 interface Subscription {
     id: string;
-    plan: string;
+    tier: string;
     status: string;
-    currentPeriodStart: Date;
-    currentPeriodEnd: Date;
+    startDate: Date;
+    endDate: Date | null;
     restaurant: {
         name: string;
         slug: string;
@@ -33,6 +33,7 @@ interface Payment {
     amount: number;
     status: string;
     method: string;
+    transactionId: string | null;
     createdAt: Date;
     order: {
         id: string;
