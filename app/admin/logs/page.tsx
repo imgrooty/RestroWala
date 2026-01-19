@@ -15,8 +15,23 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 
+interface SystemLog {
+    id: string;
+    event: string;
+    level: string;
+    message: string;
+    userId: string | null;
+    user: {
+        name: string | null;
+        email: string;
+    } | null;
+    userName: string | null;
+    userEmail: string | null;
+    createdAt: Date;
+}
+
 export default function LogsPage() {
-    const [logs, setLogs] = useState<any[]>([]);
+    const [logs, setLogs] = useState<SystemLog[]>([]);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
 

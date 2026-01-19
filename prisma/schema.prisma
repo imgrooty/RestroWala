@@ -536,6 +536,8 @@ model SystemLog {
   message   String   @db.Text
   userId    String?
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userName  String?  // Snapshot of user's name at log time for audit purposes
+  userEmail String?  // Snapshot of user's email at log time for audit purposes
   createdAt DateTime @default(now())
 
   @@index([level])
