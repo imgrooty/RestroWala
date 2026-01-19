@@ -14,6 +14,8 @@ import { prisma } from '@/lib/prisma';
 import { UserRole, OrderStatus } from '@/types/prisma';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, format, eachDayOfInterval, eachMonthOfInterval } from 'date-fns';
 
+export const dynamic = 'force-dynamic';
+
 interface RevenueDataPoint {
   date: string;
   revenue: number;

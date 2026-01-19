@@ -18,6 +18,8 @@ enum UserRole {
   CASHIER = "CASHIER",
   MANAGER = "MANAGER",
   ADMIN = "ADMIN",
+  SUPER_ADMIN = "SUPER_ADMIN",
+  CLEANER = "CLEANER",
 }
 
 export default withAuth(
@@ -32,10 +34,12 @@ export default withAuth(
 
     // Role-based route protection
     const roleRoutes: Record<string, UserRole[]> = {
-      "/manager": [UserRole.MANAGER, UserRole.ADMIN],
-      "/waiter": [UserRole.WAITER, UserRole.MANAGER, UserRole.ADMIN],
-      "/kitchen": [UserRole.KITCHEN_STAFF, UserRole.MANAGER, UserRole.ADMIN],
-      "/cashier": [UserRole.CASHIER, UserRole.MANAGER, UserRole.ADMIN],
+      "/manager": [UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN],
+      "/waiter": [UserRole.WAITER, UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN],
+      "/kitchen": [UserRole.KITCHEN_STAFF, UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN],
+      "/cashier": [UserRole.CASHIER, UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN],
+      "/admin": [UserRole.SUPER_ADMIN],
+      "/cleaner": [UserRole.CLEANER, UserRole.MANAGER, UserRole.ADMIN, UserRole.SUPER_ADMIN],
     };
 
     // Check if current path requires specific role
@@ -77,6 +81,7 @@ export default withAuth(
           "/api/menu",   // Menu items
           "/api/categories", // Categories
           "/api/upload", // Image upload (if needed)
+          "/dine-in"
         ];
 
         // Check if route is public
@@ -89,8 +94,8 @@ export default withAuth(
           return true;
         }
 
-        // All other routes require authentication
-        return !!token;
+        // All other routes require authentication and a valid role
+        return !!token && !!token.role;
       },
     },
   }
@@ -101,11 +106,13 @@ export default withAuth(
  */
 function getRoleBasedRedirect(role: UserRole): string {
   const redirects: Record<UserRole, string> = {
+    [UserRole.SUPER_ADMIN]: "/admin/dashboard",
     [UserRole.ADMIN]: "/manager/dashboard",
     [UserRole.MANAGER]: "/manager/dashboard",
     [UserRole.KITCHEN_STAFF]: "/kitchen/orders",
     [UserRole.CASHIER]: "/cashier/dashboard",
     [UserRole.WAITER]: "/waiter/dashboard",
+    [UserRole.CLEANER]: "/cleaner/dashboard",
     [UserRole.CUSTOMER]: "/",
   };
 

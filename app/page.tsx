@@ -1,8 +1,30 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChefHat, Utensils, ArrowRight, Zap, Globe, Users } from 'lucide-react';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user?.role) {
+    const roleRedirects: Record<string, string> = {
+      'SUPER_ADMIN': '/admin/dashboard',
+      'ADMIN': '/manager/dashboard',
+      'MANAGER': '/manager/dashboard',
+      'KITCHEN_STAFF': '/kitchen/orders',
+      'CASHIER': '/cashier/dashboard',
+      'WAITER': '/waiter/dashboard',
+      'CLEANER': '/cleaner/dashboard',
+      'CUSTOMER': '/',
+    };
+
+    const targetPath = roleRedirects[session.user.role as string];
+    if (targetPath && targetPath !== '/' && session.user.role !== 'CUSTOMER') {
+      redirect(targetPath);
+    }
+  }
   return (
     <main className="min-h-screen bg-white flex flex-col">
       {/* SaaS Navigation */}
@@ -11,7 +33,7 @@ export default function Home() {
           <div className="bg-primary/10 p-2 rounded-xl">
             <ChefHat className="h-6 w-6 text-primary" />
           </div>
-          <span className="font-bold text-xl text-slate-900 tracking-tight">Gourmet<span className="text-primary">OS</span></span>
+          <span className="font-bold text-xl text-slate-900 tracking-tight">Restro<span className="text-primary">Wala</span></span>
         </div>
         <div className="hidden md:flex gap-8 items-center text-sm font-bold text-slate-500">
           <Link href="#features" className="hover:text-primary transition-colors">Features</Link>
@@ -129,9 +151,9 @@ export default function Home() {
           <div className="bg-primary/10 p-2 rounded-xl">
             <ChefHat className="h-6 w-6 text-primary" />
           </div>
-          <span className="font-bold text-xl text-slate-900 tracking-tight">Gourmet<span className="text-primary">OS</span></span>
+          <span className="font-bold text-xl text-slate-900 tracking-tight">Restro<span className="text-primary">Wala</span></span>
         </div>
-        <p className="text-slate-400 text-sm font-medium">© {new Date().getFullYear()} GourmetOS Platform. All rights reserved.</p>
+        <p className="text-slate-400 text-sm font-medium">© {new Date().getFullYear()} RestroWala Platform. All rights reserved.</p>
       </footer>
     </main>
   );

@@ -27,8 +27,14 @@ export async function GET(request: NextRequest) {
     const slug = searchParams.get('slug');
     let restaurantId = searchParams.get('restaurantId');
 
-    // If slug is provided, resolve restaurantId
-    if (slug) {
+    const session = await getServerSession(authOptions);
+
+    // Enforce isolation for staff
+    if (session?.user?.restaurantId) {
+      restaurantId = session.user.restaurantId;
+    }
+    // Public access via slug
+    else if (slug) {
       const restaurant = await prisma.restaurant.findUnique({
         where: { slug } as any,
         select: { id: true }
@@ -36,6 +42,11 @@ export async function GET(request: NextRequest) {
       if (restaurant) {
         restaurantId = restaurant.id;
       }
+    }
+
+    // Safety check: Don't return all items if no context
+    if (!restaurantId) {
+      return NextResponse.json({ data: [], categories: [] });
     }
 
     // Build where clause
@@ -136,7 +147,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -147,8 +158,49 @@ export async function POST(_request: NextRequest) {
       );
     }
 
-    // Implementation for creating menu items
-    return NextResponse.json({ message: 'Create menu item' });
+    const body = await request.json();
+    const { name, description, price, categoryId, model3dUrl, isVegetarian, isVegan, isGlutenFree } = body;
+
+    if (!name || !price || !session.user.restaurantId) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Default category if not provided?
+    let targetCategoryId = categoryId;
+    if (!targetCategoryId) {
+      // Find first category
+      const firstCat = await prisma.category.findFirst({
+        where: { restaurantId: session.user.restaurantId }
+      });
+      if (firstCat) targetCategoryId = firstCat.id;
+      else {
+        // Create default category
+        const newCat = await prisma.category.create({
+          data: {
+            name: "General",
+            restaurantId: session.user.restaurantId
+          }
+        });
+        targetCategoryId = newCat.id;
+      }
+    }
+
+    const newItem = await prisma.menuItem.create({
+      data: {
+        name,
+        description,
+        price: parseFloat(price),
+        restaurantId: session.user.restaurantId,
+        categoryId: targetCategoryId,
+        model3dUrl,
+        isVegetarian: isVegetarian || false,
+        isVegan: isVegan || false,
+        isGlutenFree: isGlutenFree || false,
+        isAvailable: true
+      }
+    });
+
+    return NextResponse.json({ message: 'Menu item created', data: newItem }, { status: 201 });
   } catch (error) {
     console.error('Error creating menu item:', error);
     return NextResponse.json(

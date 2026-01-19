@@ -1,4 +1,3 @@
-import { processGlb } from 'gltf-pipeline';
 import fs from 'fs';
 import path from 'path';
 
@@ -26,6 +25,8 @@ export async function optimizeModel(buffer: Buffer): Promise<{ data: Buffer; met
     };
 
     try {
+        // Dynamic import to avoid build-time issues with Cesium/index.cjs
+        const { processGlb } = await import('gltf-pipeline');
         const results = await processGlb(buffer, options);
         const optimizedBuffer = results.glb;
 

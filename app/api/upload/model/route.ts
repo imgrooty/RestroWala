@@ -3,12 +3,16 @@ import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { optimizeModel } from '@/lib/modelOptimizer';
+
 import { z } from 'zod';
+
+export const dynamic = 'force-dynamic';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_EXTENSIONS = ['.glb', '.gltf'];
 
-const uploadSchema = z.object({
+// Prefixed with _ to silence unused warning if needed, or just keep for validation logic
+const _uploadSchema = z.object({
     file: z.any().refine((file) => file?.size <= MAX_FILE_SIZE, 'File size must be less than 10MB'),
 });
 
