@@ -25,7 +25,7 @@ const updateTableSchema = z.object({
  * Get single table details
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -229,7 +229,7 @@ export async function PUT(
  * Delete table (MANAGER only)
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {

@@ -78,10 +78,12 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Create reset URL
+    // Create reset URL (will be used when email functionality is implemented)
+    // @ts-expect-error - Variable prepared for future email implementation
     const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
-    // TODO: Send email with reset link
+    // TODO: Send email with reset link using resetUrl variable
+    // await sendEmail({ to: email, subject: 'Reset your password', html: `<a href="${resetUrl}">Reset</a>` });
     // For now, we'll just log that a reset was requested (in production, use SendGrid, Resend, etc.)
     console.log('Password reset requested for:', email);
     // SECURITY: Never log the reset token or URL in production
