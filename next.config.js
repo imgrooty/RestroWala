@@ -5,7 +5,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.amazonaws.com',
       },
     ],
   },
@@ -15,10 +19,12 @@ const nextConfig = {
     },
   },
   typescript: {
-    ignoreBuildErrors: true,
+    // Only ignore build errors in development
+    ignoreBuildErrors: process.env.NODE_ENV === 'development',
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    // Only ignore during builds in development
+    ignoreDuringBuilds: process.env.NODE_ENV === 'development',
   },
   async headers() {
     return [
@@ -36,6 +42,14 @@ const nextConfig = {
           {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
           },
         ],
       },

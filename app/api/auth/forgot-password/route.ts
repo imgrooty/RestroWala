@@ -11,9 +11,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
+import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting check
+    const identifier = getClientIdentifier(request);
+    const rateLimit = await checkRateLimit(identifier, RATE_LIMITS.FORGOT_PASSWORD);
+    
+    if (rateLimit.limited) {
+      return NextResponse.json(
+        { 
+          error: 'Too many password reset attempts. Please try again later.',
+          retryAfter: rateLimit.resetIn 
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': rateLimit.resetIn.toString(),
+            'X-RateLimit-Limit': RATE_LIMITS.FORGOT_PASSWORD.maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimit.resetIn.toString(),
+          }
+        }
+      );
+    }
+
     const { email } = await request.json();
 
     // Validate email
@@ -41,6 +64,11 @@ export async function POST(request: NextRequest) {
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
+    // Delete any existing tokens for this email (prevent multiple active tokens)
+    await prisma.verificationToken.deleteMany({
+      where: { identifier: email.toLowerCase() }
+    });
+
     // Store token in database
     await prisma.verificationToken.create({
       data: {
@@ -54,9 +82,9 @@ export async function POST(request: NextRequest) {
     const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
     // TODO: Send email with reset link
-    // For now, we'll just log it (in production, use SendGrid, Resend, etc.)
-    console.log('Password reset link:', resetUrl);
-    console.log('Send this link to:', email);
+    // For now, we'll just log that a reset was requested (in production, use SendGrid, Resend, etc.)
+    console.log('Password reset requested for:', email);
+    // SECURITY: Never log the reset token or URL in production
 
     // Example email content:
     // Subject: Reset your password
