@@ -66,3 +66,119 @@ export async function createRestaurant(data: FormData) {
         return { success: false, error: "Failed to create restaurant" }
     }
 }
+
+export async function deleteRestaurant(id: string) {
+    try {
+        await prisma.restaurant.delete({
+            where: { id }
+        })
+        revalidatePath('/admin/restaurants')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "Failed to delete restaurant" }
+    }
+}
+
+export async function updateRestaurantStatus(id: string, isActive: boolean) {
+    try {
+        await prisma.restaurant.update({
+            where: { id },
+            data: { isActive }
+        })
+        revalidatePath('/admin/restaurants')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "Failed to update restaurant status" }
+    }
+}
+
+export async function getGlobalUsers() {
+    try {
+        const users = await prisma.user.findMany({
+            include: {
+                restaurant: {
+                    select: {
+                        name: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
+        return { success: true, data: users }
+    } catch (error) {
+        return { success: false, error: "Failed to fetch users" }
+    }
+}
+
+export async function manageUserStatus(userId: string, isActive: boolean) {
+    try {
+        await prisma.user.update({
+            where: { id: userId },
+            data: { isActive }
+        })
+        revalidatePath('/admin/users')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "Failed to update user status" }
+    }
+}
+
+export async function updateUserRole(userId: string, role: string) {
+    try {
+        await prisma.user.update({
+            where: { id: userId },
+            data: { role: role as any }
+        })
+        revalidatePath('/admin/users')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "Failed to update user role" }
+    }
+}
+
+export async function getAdminMetrics() {
+    try {
+        const [restaurantCount, userCount, activeOrders, totalRevenue] = await Promise.all([
+            prisma.restaurant.count(),
+            prisma.user.count(),
+            prisma.order.count({ where: { status: { notIn: ['COMPLETED', 'CANCELLED'] } } }),
+            prisma.payment.aggregate({
+                _sum: { amount: true },
+                where: { status: 'COMPLETED' }
+            })
+        ])
+
+        return {
+            success: true,
+            data: {
+                activeNodes: restaurantCount,
+                totalUsers: userCount,
+                activeOrders,
+                totalRevenue: totalRevenue._sum.amount || 0,
+                dataVolume: "45.2 GB", // Mocked for now
+                systemHealth: "100%", // Mocked for now
+                securityEvents: 0
+            }
+        }
+    } catch (error) {
+        return { success: false, error: "Failed to fetch metrics" }
+    }
+}
+
+export async function getSubscriptions() {
+    try {
+        const subscriptions = await prisma.subscription.findMany({
+            include: {
+                restaurant: true
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
+        return { success: true, data: subscriptions }
+    } catch (error) {
+        return { success: false, error: "Failed to fetch subscriptions" }
+    }
+}

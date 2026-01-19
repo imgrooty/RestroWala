@@ -9,7 +9,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -30,7 +30,7 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Get callback URL from query params or default to home
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = searchParams?.get('callbackUrl') || '/';
 
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +88,27 @@ export default function LoginPage() {
           title: 'Success',
           description: 'Logged in successfully',
         });
-        router.push(callbackUrl);
+
+        // Fetch session to get user role for proper redirection
+        const response = await fetch('/api/auth/session');
+        const session = await response.json();
+
+        if (session?.user?.role && callbackUrl === '/') {
+          const roleRedirects: Record<string, string> = {
+            'SUPER_ADMIN': '/admin/dashboard',
+            'ADMIN': '/manager/dashboard',
+            'MANAGER': '/manager/dashboard',
+            'KITCHEN_STAFF': '/kitchen/orders',
+            'CASHIER': '/cashier/dashboard',
+            'WAITER': '/waiter/dashboard',
+            'CLEANER': '/cleaner/dashboard',
+            'CUSTOMER': '/',
+          };
+          router.push(roleRedirects[session.user.role] || '/');
+        } else {
+          router.push(callbackUrl);
+        }
+
         router.refresh();
       }
     } catch (error) {
@@ -183,5 +203,20 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="w-full max-w-md space-y-8 px-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

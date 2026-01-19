@@ -79,6 +79,19 @@ enum InventoryUnit {
   CAN        // Cans
 }
 
+enum SubscriptionTier {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
+}
+
 // ==================== AUTHENTICATION MODELS ====================
 
 model User {
@@ -184,6 +197,10 @@ model Restaurant {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  // Subscription
+  subscriptionId String?   @unique
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
   
   // Relations
   tables        Table[]
@@ -483,4 +500,28 @@ model Analytics {
   @@unique([date, restaurantId])
   @@index([restaurantId])
   @@index([date])
+}
+
+// ==================== SUBSCRIPTION & BILLING ====================
+
+model Subscription {
+  id              String             @id @default(cuid())
+  tier            SubscriptionTier   @default(FREE)
+  status          SubscriptionStatus @default(ACTIVE)
+  startDate       DateTime           @default(now())
+  endDate         DateTime?
+  cancelAtPeriodEnd Boolean          @default(false)
+  
+  // Billing details
+  stripeCustomerId String?           @unique
+  stripePriceId    String?
+  
+  // Relations
+  restaurant      Restaurant?
+  
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  
+  @@index([status])
+  @@index([tier])
 }

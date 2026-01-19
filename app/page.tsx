@@ -1,8 +1,30 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChefHat, Utensils, ArrowRight, Zap, Globe, Users } from 'lucide-react';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user?.role) {
+    const roleRedirects: Record<string, string> = {
+      'SUPER_ADMIN': '/admin/dashboard',
+      'ADMIN': '/manager/dashboard',
+      'MANAGER': '/manager/dashboard',
+      'KITCHEN_STAFF': '/kitchen/orders',
+      'CASHIER': '/cashier/dashboard',
+      'WAITER': '/waiter/dashboard',
+      'CLEANER': '/cleaner/dashboard',
+      'CUSTOMER': '/',
+    };
+
+    const targetPath = roleRedirects[session.user.role as string];
+    if (targetPath && targetPath !== '/' && session.user.role !== 'CUSTOMER') {
+      redirect(targetPath);
+    }
+  }
   return (
     <main className="min-h-screen bg-white flex flex-col">
       {/* SaaS Navigation */}

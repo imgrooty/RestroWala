@@ -11,8 +11,6 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { emitTableStatusChanged } from '@/lib/socket';
-
 const updateTableSchema = z.object({
   number: z.number().min(1).optional(),
   capacity: z.number().min(1).optional(),
@@ -186,13 +184,15 @@ export async function PUT(
 
     // Emit real-time event if status changed
     if (data.status && data.status !== existingTable.status) {
-      emitTableStatusChanged({
-        tableId: table.id,
-        tableNumber: table.number,
-        status: table.status,
-        previousStatus: existingTable.status,
-        waiterId: table.waiterId,
-      });
+      import('@/lib/socket').then(({ emitTableStatusChanged }) => {
+        emitTableStatusChanged({
+          tableId: table.id,
+          tableNumber: table.number,
+          status: table.status as any,
+          previousStatus: existingTable.status as any,
+          waiterId: table.waiterId,
+        });
+      }).catch(err => console.error('Failed to emit table:status-changed:', err));
     }
 
     return NextResponse.json({

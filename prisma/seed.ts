@@ -64,15 +64,15 @@ async function main() {
       ],
       categories: [
         {
-          name: 'Starters', items: [
-            { name: 'Truffle Mac & Cheese', price: 18.50, description: 'Creamy macaroni with black truffle oil' },
+          name: 'Starters', image: '/images/categories/starters.png', items: [
+            { name: 'Truffle Mac & Cheese', price: 18.50, description: 'Creamy macaroni with black truffle oil', image: '/images/categories/starters.png' },
             { name: 'Calamari Fritti', price: 16.00, description: 'Crispy fried calamari with marinara dip' },
             { name: 'Wagyu Beef Sliders', price: 22.00, description: 'Mini burgers with caramelized onions' }
           ]
         },
         {
-          name: 'Steaks & Grills', items: [
-            { name: 'Wagyu Ribeye (12oz)', price: 85.00, description: 'A5 Grade Japanese Wagyu', isFeatured: true },
+          name: 'Steaks & Grills', image: '/images/categories/steaks.png', items: [
+            { name: 'Wagyu Ribeye (12oz)', price: 85.00, description: 'A5 Grade Japanese Wagyu', isFeatured: true, image: '/images/categories/steaks.png' },
             { name: 'Filet Mignon (8oz)', price: 55.00, description: 'Tender beef fillet with red wine reduction' },
             { name: 'Herb-Crusted Lamb Rack', price: 48.00, description: 'Served with roasted root vegetables' },
             { name: 'Grilled Salmon', price: 32.00, description: 'Atlantic salmon with lemon butter sauce' }
@@ -117,23 +117,23 @@ async function main() {
       ],
       categories: [
         {
-          name: 'Antipasti', items: [
+          name: 'Antipasti', image: '/images/categories/starters.png', items: [
             { name: 'Bruschetta Pomodoro', price: 10.00, description: 'Toasted bread with tomatoes and basil' },
             { name: 'Burrata with Pesto', price: 14.50, description: 'Fresh creamy cheese with basil pesto' },
             { name: 'Arancini', price: 12.00, description: 'Fried saffron risotto balls' }
           ]
         },
         {
-          name: 'Pasta Classico', items: [
-            { name: 'Carbonara Authentica', price: 21.00, description: 'Guanciale, pecorino, egg yolk, black pepper', isFeatured: true },
+          name: 'Pasta Classico', image: '/images/categories/pasta.png', items: [
+            { name: 'Carbonara Authentica', price: 21.00, description: 'Guanciale, pecorino, egg yolk, black pepper', isFeatured: true, image: '/images/categories/pasta.png' },
             { name: 'Tagliatelle al Tartufo', price: 24.00, description: 'Fresh pork truffle pasta' },
             { name: 'Pappardelle Bolognese', price: 19.00, description: 'Slow-cooked beef ragu' },
             { name: 'Ravioli Ricotta', price: 18.00, description: 'Filled with spinach and ricotta' }
           ]
         },
         {
-          name: 'Pizza', items: [
-            { name: 'Margherita', price: 15.00, description: 'Tomato, mozzarella, basil' },
+          name: 'Pizza', image: '/images/categories/pizza.png', items: [
+            { name: 'Margherita', price: 15.00, description: 'Tomato, mozzarella, basil', image: '/images/categories/pizza.png' },
             { name: 'Diavola', price: 17.00, description: 'Spicy salami and chili oil' }
           ]
         },
@@ -169,7 +169,7 @@ async function main() {
       ],
       categories: [
         {
-          name: 'Sashimi & Nigiri', items: [
+          name: 'Sashimi & Nigiri', image: '/images/categories/sushi.png', items: [
             { name: 'Bluefin Tuna (Otoro)', price: 12.00, description: 'Fatty tuna belly' },
             { name: 'Salmon Sashimi (5pcs)', price: 15.00, description: 'Fresh Atlantic salmon' },
             { name: 'Yellowtail Nigiri (2pcs)', price: 9.00, description: 'Hamachi with scallions' },
@@ -177,8 +177,8 @@ async function main() {
           ]
         },
         {
-          name: 'Signature Rolls', items: [
-            { name: 'Dragon Roll', price: 22.00, description: 'Eel, cucumber, topped with avocado', isFeatured: true },
+          name: 'Signature Rolls', image: '/images/categories/sushi.png', items: [
+            { name: 'Dragon Roll', price: 22.00, description: 'Eel, cucumber, topped with avocado', isFeatured: true, image: '/images/categories/sushi.png' },
             { name: 'Spicy Tuna Crunch', price: 18.00, description: 'Spicy tuna, tempura flakes' },
             { name: 'Rainbow Roll', price: 20.00, description: 'California roll topped with assorted fish' }
           ]
@@ -264,18 +264,20 @@ async function main() {
       const category = await prisma.category.create({
         data: {
           name: catData.name,
+          image: (catData as any).image || null,
           displayOrder: i + 1,
           restaurantId: restaurant.id,
         },
       })
 
-      for (const item of catData.items) {
+      for (const item of catData.items as any[]) {
         const menuItem = await prisma.menuItem.create({
           data: {
             name: item.name,
             price: item.price,
-            description: item.description,
-            isFeatured: (item as any).isFeatured || false,
+            description: item.description || null,
+            image: item.image || (catData as any).image || null,
+            isFeatured: item.isFeatured || false,
             categoryId: category.id,
             restaurantId: restaurant.id,
             displayOrder: 1,

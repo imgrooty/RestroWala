@@ -19,16 +19,17 @@ import { ChefHat, Clock, CheckCircle2, Activity } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import OrderCard from '@/components/shared/OrderCard';
 import { useOrders } from '@/hooks/useOrders';
+import { useSocket } from '@/hooks/useSocket';
 import { useToast } from '@/components/ui/use-toast';
 import { OrderWithRelations } from '@/types/order';
-import { OrderStatus, UserRole } from '@prisma/client';
+import { OrderStatus, UserRole as _UserRole } from '@prisma/client';
 import {
   isOrderUrgent,
 } from '@/lib/orderStateMachine';
 import { apiClient } from '@/lib/api-client';
 
 export default function KitchenOrdersPage() {
-  const { data: session } = useSession();
+  const { data: _session } = useSession();
   const router = useRouter();
   const { toast } = useToast();
   const [orders, setOrders] = useState<OrderWithRelations[]>([]);
@@ -41,13 +42,25 @@ export default function KitchenOrdersPage() {
     audioRef.current.volume = 0.7;
   }, []);
 
-  // Initial fetch replaced by useOrders polling
-
-  // useOrders hook with auto-refresh every 5 seconds
-  const { orders: allOrders, loading: ordersLoading } = useOrders({
+  // useOrders hook with auto-refresh every 30 seconds (fallback)
+  const { orders: allOrders, loading: ordersLoading, refetch } = useOrders({
     autoRefresh: true,
-    refreshInterval: 5000,
+    refreshInterval: 30000,
   });
+
+  const { on } = useSocket();
+
+  useEffect(() => {
+    on('order:created', () => {
+      refetch();
+      if (audioRef.current) audioRef.current.play().catch(() => { });
+      toast({ title: 'New Order', description: 'A new order has been placed' });
+    });
+
+    on('order:status-changed', () => {
+      refetch();
+    });
+  }, [on, refetch, toast]);
 
   // Use allOrders and filter them
   useEffect(() => {

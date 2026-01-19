@@ -1,53 +1,27 @@
-/**
- * Socket.io API Route
- * 
- * Initialize and expose Socket.io server
- * - Next.js 14 App Router compatible
- * - Server initialization
- * - WebSocket upgrade handling
- */
+import { NextResponse } from 'next/server';
+import { isIOInitialized, getIO } from '../../../lib/socket';
 
-import { NextRequest } from 'next/server';
-import { getIO, isIOInitialized } from '@/lib/socket';
+export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    // Check if Socket.io is initialized
     if (!isIOInitialized()) {
-      return new Response(
-        JSON.stringify({ error: 'Socket.io not initialized' }),
-        {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        }
+      return NextResponse.json(
+        { status: 'inactive', message: 'Socket.io not yet initialized. Visit /api/socket first.' },
+        { status: 200 }
       );
     }
 
     const io = getIO();
-    
-    // Get connected clients count
     const sockets = await io.fetchSockets();
-    const connectedClients = sockets.length;
 
-    return new Response(
-      JSON.stringify({
-        status: 'active',
-        connectedClients,
-        timestamp: new Date().toISOString(),
-      }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return NextResponse.json({
+      status: 'active',
+      connectedClients: sockets.length,
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
-    console.error('Socket.io route error:', error);
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    console.error('Socket.io status route error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

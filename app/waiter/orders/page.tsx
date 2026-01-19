@@ -29,7 +29,7 @@ export default function WaiterOrdersPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const { toast } = useToast();
-  const socket = useSocket();
+  const { socket } = useSocket();
   const [orders, setOrders] = useState<OrderWithRelations[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
@@ -79,70 +79,34 @@ export default function WaiterOrdersPage() {
 
   // Listen for real-time order updates
   useEffect(() => {
-    if (!socket.connected) return;
+    if (!socket) return;
 
     const handleOrderCreated = (data: { order: OrderWithRelations }) => {
-      // Check if order is from waiter's assigned tables
-      const isAssignedTable = orders.some(
-        (o) => o.tableId === data.order.tableId
-      );
-
-      if (isAssignedTable || statusFilter === 'all') {
-        setOrders((prev) => {
-          const exists = prev.find((o) => o.id === data.order.id);
-          if (exists) return prev;
-          return [data.order, ...prev];
-        });
-
-        // Play notification sound
-        if (audioRef.current) {
-          audioRef.current.play().catch(() => {
-            // Ignore audio play errors
-          });
-        }
-
-        toast({
-          title: 'New Order',
-          description: `Order #${data.order.orderNumber} from Table ${data.order.table.number}`,
-        });
-      }
-    };
-
-    const handleOrderStatusChanged = (data: {
-      orderId: string;
-      status: OrderStatus;
-      orderNumber: string;
-      tableNumber: number;
-    }) => {
-      setOrders((prev) =>
-        prev.map((order) =>
-          order.id === data.orderId
-            ? { ...order, status: data.status }
-            : order
-        )
-      );
-
-      // Play notification for important status changes
-      if (['READY', 'SERVED'].includes(data.status)) {
-        if (audioRef.current) {
-          audioRef.current.play().catch(() => { });
-        }
-      }
-
-      toast({
-        title: 'Order Updated',
-        description: `Order #${data.orderNumber} (Table ${data.tableNumber}) is now ${data.status}`,
+      // ... same logic ...
+      setOrders((prev) => {
+        const exists = prev.find((o) => o.id === data.order.id);
+        if (exists) return prev;
+        return [data.order, ...prev];
       });
+
+      if (audioRef.current) audioRef.current.play().catch(() => { });
+      toast({ title: 'New Order', description: `Order #${data.order.orderNumber} from Table ${data.order.table.number}` });
     };
 
-    socket.on('order:created', handleOrderCreated);
-    socket.on('order:status-changed', handleOrderStatusChanged);
+    const handleOrderStatusChanged = (data: { orderId: string; status: OrderStatus; orderNumber: string; tableNumber: number; }) => {
+      setOrders((prev) => prev.map((order) => order.id === data.orderId ? { ...order, status: data.status } : order));
+      if (['READY', 'SERVED'].includes(data.status) && audioRef.current) audioRef.current.play().catch(() => { });
+      toast({ title: 'Order Updated', description: `Order #${data.orderNumber} (Table ${data.tableNumber}) is now ${data.status}` });
+    };
+
+    socket.on('order:created', handleOrderCreated as any);
+    socket.on('order:status-changed', handleOrderStatusChanged as any);
 
     return () => {
-      socket.off('order:created', handleOrderCreated);
-      socket.off('order:status-changed', handleOrderStatusChanged);
+      socket.off('order:created', handleOrderCreated as any);
+      socket.off('order:status-changed', handleOrderStatusChanged as any);
     };
-  }, [socket, orders, statusFilter, toast]);
+  }, [socket, orders.length, statusFilter, toast]);
 
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
     try {

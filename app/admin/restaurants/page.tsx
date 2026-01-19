@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { getRestaurants, createRestaurant } from '../actions';
+import { getRestaurants, createRestaurant, deleteRestaurant, updateRestaurantStatus } from '../actions';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,6 +54,29 @@ export default function RestaurantsPage() {
             toast({ title: "Success", description: "Restaurant created successfully" });
             fetchRestaurants();
             setIsDialogOpen(false);
+        } else {
+            toast({ title: "Error", description: res.error, variant: "destructive" });
+        }
+    };
+
+    const handleDelete = async (id: string, name: string) => {
+        if (!confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+            return;
+        }
+        const res = await deleteRestaurant(id);
+        if (res.success) {
+            toast({ title: "Success", description: "Restaurant deleted successfully" });
+            fetchRestaurants();
+        } else {
+            toast({ title: "Error", description: res.error, variant: "destructive" });
+        }
+    };
+
+    const handleStatusToggle = async (id: string, currentStatus: boolean) => {
+        const res = await updateRestaurantStatus(id, !currentStatus);
+        if (res.success) {
+            toast({ title: "Success", description: "Restaurant status updated" });
+            fetchRestaurants();
         } else {
             toast({ title: "Error", description: res.error, variant: "destructive" });
         }
@@ -183,7 +206,19 @@ export default function RestaurantsPage() {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="rounded-xl border-none shadow-xl">
                                                     <DropdownMenuItem className="font-medium p-3 rounded-lg focus:bg-indigo-50 text-indigo-700">View Dashboard</DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="font-medium p-3 rounded-lg focus:bg-slate-50 text-slate-700"
+                                                        onClick={() => handleStatusToggle(res.id, res.isActive)}
+                                                    >
+                                                        {res.isActive ? 'Deactivate' : 'Activate'}
+                                                    </DropdownMenuItem>
                                                     <DropdownMenuItem className="font-medium p-3 rounded-lg focus:bg-slate-50 text-slate-700">Settings</DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="font-medium p-3 rounded-lg focus:bg-rose-50 text-rose-700"
+                                                        onClick={() => handleDelete(res.id, res.name)}
+                                                    >
+                                                        Delete
+                                                    </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>

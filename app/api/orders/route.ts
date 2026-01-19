@@ -297,7 +297,10 @@ export async function POST(request: NextRequest) {
       data: { status: 'OCCUPIED' },
     });
 
-    // EMISSION REMOVED: Dashboards will use polling for sync
+    // Emit socket event for new order
+    import('@/lib/socket').then(({ emitOrderCreated }) => {
+      emitOrderCreated({ order });
+    }).catch(err => console.error('Failed to emit order:created:', err));
 
     return NextResponse.json(
       {

@@ -94,8 +94,8 @@ export default withAuth(
           return true;
         }
 
-        // All other routes require authentication
-        return !!token;
+        // All other routes require authentication and a valid role
+        return !!token && !!token.role;
       },
     },
   }

@@ -14,7 +14,6 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { OrderStatus, UserRole } from '@/types/prisma';
 import { validateTransition } from '@/lib/orderStateMachine';
-import { emitOrderStatusChanged } from '@/lib/socket';
 import { z } from 'zod';
 
 const updateStatusSchema = z.object({
@@ -172,20 +171,22 @@ export async function PATCH(
     }
 
     // Emit Socket.io event
-    emitOrderStatusChanged({
-      orderId: updatedOrder.id,
-      orderNumber: updatedOrder.orderNumber,
-      status: newStatus,
-      previousStatus: order.status,
-      tableId: order.tableId,
-      tableNumber: order.table.number,
-      timestamp: new Date(),
-      updatedBy: {
-        id: session.user.id,
-        name: session.user.name || 'Unknown',
-        role: userRole,
-      },
-    });
+    import('@/lib/socket').then(({ emitOrderStatusChanged }) => {
+      emitOrderStatusChanged({
+        orderId: updatedOrder.id,
+        orderNumber: updatedOrder.orderNumber,
+        status: newStatus,
+        previousStatus: order.status,
+        tableId: order.tableId,
+        tableNumber: order.table.number,
+        timestamp: new Date(),
+        updatedBy: {
+          id: session.user.id,
+          name: session.user.name || 'Unknown',
+          role: userRole,
+        },
+      });
+    }).catch(err => console.error('Failed to emit order:status-changed:', err));
 
     return NextResponse.json({
       message: 'Order status updated successfully',

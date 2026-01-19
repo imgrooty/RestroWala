@@ -1,13 +1,37 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-
-import { ShieldCheck, Server, Database, Activity, Users, Lock, ChevronRight } from "lucide-react";
+import { ShieldCheck, Server, Activity, Users, Lock, ChevronRight, DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getAdminMetrics } from "../actions";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function AdminDashboardPage() {
+    const [metrics, setMetrics] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
+
+    useEffect(() => {
+        fetchMetrics();
+    }, []);
+
+    const fetchMetrics = async () => {
+        const res = await getAdminMetrics();
+        if (res.success) {
+            setMetrics(res.data);
+        } else {
+            toast({ title: "Error", description: res.error, variant: "destructive" });
+        }
+        setLoading(false);
+    };
+
+    if (loading) {
+        return <div className="p-8 text-center font-bold text-slate-500">Loading system metrics...</div>;
+    }
+
     return (
         <div className="p-8 space-y-10">
             {/* Header */}
@@ -21,17 +45,37 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="flex gap-3">
                     <Button className="bg-indigo-600 hover:bg-indigo-700 font-bold shadow-lg shadow-indigo-200">
-                        <Activity className="mr-2 h-4 w-4" /> System Health: 100%
+                        <Activity className="mr-2 h-4 w-4" /> System Health: {metrics?.systemHealth || "100%"}
                     </Button>
                 </div>
             </div>
 
             {/* Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <AdminMetric icon={<Server className="text-indigo-600" />} label="Active Nodes" value="12" sub="+2 adding" />
-                <AdminMetric icon={<Database className="text-blue-600" />} label="Data Volume" value="45.2 GB" sub="Healthy" />
-                <AdminMetric icon={<Users className="text-emerald-600" />} label="Total Users" value="1,240" sub="+18 today" />
-                <AdminMetric icon={<Lock className="text-rose-600" />} label="Security Events" value="0" sub="Secure" />
+                <AdminMetric
+                    icon={<Server className="text-indigo-600" />}
+                    label="Active Nodes"
+                    value={metrics?.activeNodes || 0}
+                    sub="Running"
+                />
+                <AdminMetric
+                    icon={<DollarSign className="text-emerald-600" />}
+                    label="Total Revenue"
+                    value={`$${metrics?.totalRevenue?.toLocaleString() || 0}`}
+                    sub="Gross"
+                />
+                <AdminMetric
+                    icon={<Users className="text-blue-600" />}
+                    label="Total Users"
+                    value={metrics?.totalUsers?.toLocaleString() || 0}
+                    sub="Verified"
+                />
+                <AdminMetric
+                    icon={<Lock className="text-rose-600" />}
+                    label="Security Events"
+                    value={metrics?.securityEvents || 0}
+                    sub="Safe"
+                />
             </div>
 
             {/* Control Modules */}
@@ -43,8 +87,12 @@ export default function AdminDashboardPage() {
                     <Link href="/admin/restaurants">
                         <AdminModule title="Multi-Tenancy" desc="Manage restaurant instances and domains." />
                     </Link>
-                    <AdminModule title="User Management" desc="Global user roles and permissions audit." />
-                    <AdminModule title="Billing & Plans" desc="Subscription tiers and revenue attribution." />
+                    <Link href="/admin/users">
+                        <AdminModule title="User Management" desc="Global user roles and permissions audit." />
+                    </Link>
+                    <Link href="/admin/billing">
+                        <AdminModule title="Billing & Plans" desc="Subscription tiers and revenue attribution." />
+                    </Link>
                     <AdminModule title="System Logs" desc="Raw server logs and error tracking." />
                     <AdminModule title="Feature Flags" desc="Toggle beta features for specific tenants." />
                     <AdminModule title="API Keys" desc="Manage third-party integration access tokens." />
