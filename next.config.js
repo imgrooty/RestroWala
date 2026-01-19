@@ -62,8 +62,8 @@ const nextConfig = {
             // In development, Next.js requires unsafe-eval for hot reloading
             // In production, we use stricter CSP but allow necessary external resources
             value: isDev
-              ? "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://ajax.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: ws: wss:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';"
-              : "default-src 'self'; script-src 'self' https://ajax.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';",
+              ? "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://ajax.googleapis.com https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: ws: wss:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';"
+              : "default-src 'self'; script-src 'self' 'unsafe-inline' https://ajax.googleapis.com https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';",
           },
         ],
       },
