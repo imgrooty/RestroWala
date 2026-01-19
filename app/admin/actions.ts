@@ -65,6 +65,25 @@ export async function createRestaurant(data: FormData) {
             return { success: false, error: "Required fields missing" }
         }
 
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(managerEmail)) {
+            return { success: false, error: "Invalid email format for manager email" }
+        }
+
+        // Validate password strength
+        if (managerPassword.length < 8) {
+            return { success: false, error: "Password must be at least 8 characters long" }
+        }
+
+        // Check for manager email uniqueness
+        const existingUser = await prisma.user.findUnique({
+            where: { email: managerEmail }
+        })
+        if (existingUser) {
+            return { success: false, error: "A user with this email already exists" }
+        }
+
         const hashedPassword = await bcrypt.hash(managerPassword, 10)
 
         const restaurant = await prisma.restaurant.create({
@@ -90,13 +109,19 @@ export async function createRestaurant(data: FormData) {
             "RESTAURANT_CREATED",
             `Created new restaurant: ${name} (${slug}) with manager ${managerEmail}`,
             LogLevel.INFO,
-            session.user.id
+            session.user.id,
+            session.user.name || undefined,
+            session.user.email || undefined
         )
 
         revalidatePath('/admin/restaurants')
         return { success: true, data: restaurant }
     } catch (error: any) {
         if (error.code === 'P2002') {
+            const target = error.meta?.target
+            if (target && target.includes('slug')) {
+                return { success: false, error: "A restaurant with this slug already exists" }
+            }
             return { success: false, error: "A restaurant or user with this identifier already exists" }
         }
         return { success: false, error: error.message || "Failed to create restaurant" }
@@ -117,22 +142,26 @@ export async function deleteRestaurant(id: string) {
             return { success: false, error: "Restaurant not found" }
         }
 
-        await prisma.restaurant.delete({
-            where: { id }
-        })
+        // Delete restaurant and associated subscription atomically
+        await prisma.$transaction(async (tx) => {
+            await tx.restaurant.delete({
+                where: { id }
+            })
 
-        // Cleanup subscription if it exists
-        if (restaurant.subscriptionId) {
-            await prisma.subscription.delete({
-                where: { id: restaurant.subscriptionId }
-            }).catch(err => console.error("Failed to cleanup subscription:", err))
-        }
+            if (restaurant.subscriptionId) {
+                await tx.subscription.delete({
+                    where: { id: restaurant.subscriptionId }
+                })
+            }
+        })
 
         await createLog(
             "RESTAURANT_DELETED",
             `Deleted restaurant: ${restaurant.name}`,
             LogLevel.WARN,
-            session.user.id
+            session.user.id,
+            session.user.name || undefined,
+            session.user.email || undefined
         )
 
         revalidatePath('/admin/restaurants')
@@ -154,7 +183,9 @@ export async function updateRestaurantStatus(id: string, isActive: boolean) {
             "RESTAURANT_STATUS_UPDATED",
             `${isActive ? 'Activated' : 'Deactivated'} restaurant: ${restaurant.name}`,
             LogLevel.INFO,
-            session.user.id
+            session.user.id,
+            session.user.name || undefined,
+            session.user.email || undefined
         )
 
         revalidatePath('/admin/restaurants')
@@ -197,7 +228,9 @@ export async function manageUserStatus(userId: string, isActive: boolean) {
             "USER_STATUS_UPDATED",
             `${isActive ? 'Activated' : 'Deactivated'} user: ${user.email}`,
             LogLevel.INFO,
-            session.user.id
+            session.user.id,
+            session.user.name || undefined,
+            session.user.email || undefined
         )
 
         revalidatePath('/admin/users')
@@ -219,7 +252,9 @@ export async function updateUserRole(userId: string, role: string) {
             "USER_ROLE_UPDATED",
             `Updated role for ${user.email} to ${role}`,
             LogLevel.INFO,
-            session.user.id
+            session.user.id,
+            session.user.name || undefined,
+            session.user.email || undefined
         )
 
         revalidatePath('/admin/users')
@@ -240,7 +275,9 @@ export async function deleteUser(userId: string) {
             "USER_DELETED",
             `Deleted user: ${user.email}`,
             LogLevel.WARN,
-            session.user.id
+            session.user.id,
+            session.user.name || undefined,
+            session.user.email || undefined
         )
 
         revalidatePath('/admin/users')
@@ -350,22 +387,26 @@ export async function getGlobalPayments() {
 export async function getGlobalBillingMetrics() {
     try {
         await ensureSuperAdmin()
-        const [revenueData, transactionCount] = await Promise.all([
+        const [revenueData, transactionCount, completedTransactionCount] = await Promise.all([
             prisma.payment.aggregate({
                 _sum: { amount: true },
                 where: { status: 'COMPLETED' }
             }),
-            prisma.payment.count()
+            prisma.payment.count(),
+            prisma.payment.count({
+                where: { status: 'COMPLETED' }
+            })
         ])
 
         const totalRevenue = revenueData._sum.amount || 0
-        const avgTicket = transactionCount > 0 ? totalRevenue / transactionCount : 0
+        const avgTicket = completedTransactionCount > 0 ? totalRevenue / completedTransactionCount : 0
 
         return {
             success: true,
             data: {
                 totalRevenue,
                 transactionCount,
+                completedTransactionCount,
                 avgTicket
             }
         }
