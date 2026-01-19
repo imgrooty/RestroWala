@@ -84,8 +84,9 @@ export async function checkRateLimit(
     };
   } catch (error) {
     console.error('Rate limit check error:', error);
-    // Fail closed - rate limit by default for security
-    // Log the failure for monitoring
+    // FAIL CLOSED: Block requests by default when rate limiting fails
+    // This is a security-first approach - better to temporarily block legitimate
+    // traffic than to allow potential abuse during Redis outages
     console.error(`SECURITY: Rate limiting failed for ${identifier}. Blocking request as a precaution.`);
     return {
       limited: true,

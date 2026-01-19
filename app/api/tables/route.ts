@@ -55,8 +55,8 @@ export async function POST(request: NextRequest) {
 
     // Validate input using schema
     const validation = tableSchema.safeParse({
-      number: parseInt(body.number),
-      capacity: parseInt(body.capacity),
+      number: parseInt(body.number, 10),
+      capacity: parseInt(body.capacity, 10),
       floor: body.floor,
       location: body.location,
       status: body.status,

@@ -9,10 +9,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
-      {
-        protocol: 'https',
-        hostname: '*.amazonaws.com',
-      },
+      // TODO: Replace with your specific S3 bucket domain
+      // Example: 'your-bucket-name.s3.us-east-1.amazonaws.com'
+      // {
+      //   protocol: 'https',
+      //   hostname: 'your-bucket-name.s3.amazonaws.com',
+      // },
     ],
   },
   experimental: {

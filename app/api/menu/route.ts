@@ -161,11 +161,20 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     
+    // Validate price is a valid number
+    const priceValue = parseFloat(body.price);
+    if (isNaN(priceValue)) {
+      return NextResponse.json(
+        { error: 'Invalid price value' },
+        { status: 400 }
+      );
+    }
+    
     // Use validation schema for proper input validation
     const validation = menuItemSchema.safeParse({
       ...body,
       categoryId: body.categoryId || undefined,
-      price: parseFloat(body.price),
+      price: priceValue,
     });
 
     if (!validation.success) {

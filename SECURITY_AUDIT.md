@@ -101,7 +101,7 @@ Created a comprehensive rate limiting utility (`/lib/rate-limit.ts`) that:
 - Uses Redis for distributed rate limiting
 - Provides configurable limits per endpoint
 - Returns rate limit information in response headers
-- Fails open (doesn't block) if Redis is unavailable
+- **Fails closed** (blocks requests) if Redis is unavailable for security
 - Uses IP-based identification
 
 ### Input Validation
