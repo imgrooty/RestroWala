@@ -109,7 +109,7 @@ model User {
   
   // Multi-tenancy
   restaurantId  String?
-  restaurant    Restaurant? @relation("RestaurantStaff", fields: [restaurantId], references: [id])
+  restaurant    Restaurant? @relation("RestaurantStaff", fields: [restaurantId], references: [id], onDelete: Cascade)
   
   // Relations
   orders        Order[]

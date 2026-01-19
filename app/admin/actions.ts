@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { createLog, LogLevel } from "@/lib/logger"
+import bcrypt from "bcryptjs"
 
 async function ensureSuperAdmin() {
     const session = await getServerSession(authOptions)
@@ -56,8 +57,15 @@ export async function createRestaurant(data: FormData) {
         const phone = data.get('phone') as string
         const address = data.get('address') as string
         const description = data.get('description') as string
+        const managerName = data.get('managerName') as string
+        const managerEmail = data.get('managerEmail') as string
+        const managerPassword = data.get('managerPassword') as string
 
-        if (!name || !slug) return { success: false, error: "Name and Slug are required" }
+        if (!name || !slug || !managerName || !managerEmail || !managerPassword) {
+            return { success: false, error: "Required fields missing" }
+        }
+
+        const hashedPassword = await bcrypt.hash(managerPassword, 10)
 
         const restaurant = await prisma.restaurant.create({
             data: {
@@ -66,13 +74,21 @@ export async function createRestaurant(data: FormData) {
                 email,
                 phone,
                 address,
-                description
+                description,
+                staff: {
+                    create: {
+                        name: managerName,
+                        email: managerEmail,
+                        password: hashedPassword,
+                        role: 'MANAGER'
+                    }
+                }
             }
         })
 
         await createLog(
             "RESTAURANT_CREATED",
-            `Created new restaurant: ${name} (${slug})`,
+            `Created new restaurant: ${name} (${slug}) with manager ${managerEmail}`,
             LogLevel.INFO,
             session.user.id
         )
@@ -81,7 +97,7 @@ export async function createRestaurant(data: FormData) {
         return { success: true, data: restaurant }
     } catch (error: any) {
         if (error.code === 'P2002') {
-            return { success: false, error: "A restaurant with this slug already exists" }
+            return { success: false, error: "A restaurant or user with this identifier already exists" }
         }
         return { success: false, error: error.message || "Failed to create restaurant" }
     }
@@ -90,9 +106,27 @@ export async function createRestaurant(data: FormData) {
 export async function deleteRestaurant(id: string) {
     try {
         const session = await ensureSuperAdmin()
-        const restaurant = await prisma.restaurant.delete({
+
+        // Find restaurant to get name for logging and handle subscription
+        const restaurant = await prisma.restaurant.findUnique({
+            where: { id },
+            select: { name: true, subscriptionId: true }
+        })
+
+        if (!restaurant) {
+            return { success: false, error: "Restaurant not found" }
+        }
+
+        await prisma.restaurant.delete({
             where: { id }
         })
+
+        // Cleanup subscription if it exists
+        if (restaurant.subscriptionId) {
+            await prisma.subscription.delete({
+                where: { id: restaurant.subscriptionId }
+            }).catch(err => console.error("Failed to cleanup subscription:", err))
+        }
 
         await createLog(
             "RESTAURANT_DELETED",
