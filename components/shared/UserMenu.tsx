@@ -23,22 +23,26 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { UserRole } from '@prisma/client';
 
-const roleLabels: Record<UserRole, string> = {
+const roleLabels: Record<string, string> = {
   [UserRole.ADMIN]: 'Admin',
+  [UserRole.SUPER_ADMIN]: 'Super Admin',
   [UserRole.MANAGER]: 'Manager',
   [UserRole.KITCHEN_STAFF]: 'Kitchen Staff',
   [UserRole.WAITER]: 'Waiter',
   [UserRole.CASHIER]: 'Cashier',
   [UserRole.CUSTOMER]: 'Customer',
+  [UserRole.CLEANER]: 'Cleaner',
 };
 
-const roleColors: Record<UserRole, string> = {
+const roleColors: Record<string, string> = {
   [UserRole.ADMIN]: 'bg-purple-100 text-purple-800',
+  [UserRole.SUPER_ADMIN]: 'bg-indigo-100 text-indigo-800',
   [UserRole.MANAGER]: 'bg-blue-100 text-blue-800',
   [UserRole.KITCHEN_STAFF]: 'bg-orange-100 text-orange-800',
   [UserRole.WAITER]: 'bg-green-100 text-green-800',
   [UserRole.CASHIER]: 'bg-teal-100 text-teal-800',
   [UserRole.CUSTOMER]: 'bg-gray-100 text-gray-800',
+  [UserRole.CLEANER]: 'bg-yellow-100 text-yellow-800',
 };
 
 export default function UserMenu() {

@@ -11,7 +11,7 @@ export default function Home() {
           <div className="bg-primary/10 p-2 rounded-xl">
             <ChefHat className="h-6 w-6 text-primary" />
           </div>
-          <span className="font-bold text-xl text-slate-900 tracking-tight">Gourmet<span className="text-primary">OS</span></span>
+          <span className="font-bold text-xl text-slate-900 tracking-tight">Restro<span className="text-primary">Wala</span></span>
         </div>
         <div className="hidden md:flex gap-8 items-center text-sm font-bold text-slate-500">
           <Link href="#features" className="hover:text-primary transition-colors">Features</Link>
@@ -129,9 +129,9 @@ export default function Home() {
           <div className="bg-primary/10 p-2 rounded-xl">
             <ChefHat className="h-6 w-6 text-primary" />
           </div>
-          <span className="font-bold text-xl text-slate-900 tracking-tight">Gourmet<span className="text-primary">OS</span></span>
+          <span className="font-bold text-xl text-slate-900 tracking-tight">Restro<span className="text-primary">Wala</span></span>
         </div>
-        <p className="text-slate-400 text-sm font-medium">© {new Date().getFullYear()} GourmetOS Platform. All rights reserved.</p>
+        <p className="text-slate-400 text-sm font-medium">© {new Date().getFullYear()} RestroWala Platform. All rights reserved.</p>
       </footer>
     </main>
   );

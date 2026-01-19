@@ -23,7 +23,8 @@ export async function GET() {
       where: {
         role: {
           in: [UserRole.WAITER, UserRole.KITCHEN_STAFF, UserRole.CASHIER, UserRole.MANAGER]
-        }
+        },
+        restaurantId: session.user.restaurantId
       },
       select: {
         id: true,
@@ -76,6 +77,7 @@ export async function POST(request: NextRequest) {
         role,
         phone,
         isActive: true,
+        restaurantId: session.user.restaurantId,
       }
     });
 

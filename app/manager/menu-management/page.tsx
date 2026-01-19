@@ -1,17 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ModelUploader from '@/components/manager/ModelUploader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
-import { Package, Plus, Save, Trash2, LayoutGrid, List } from 'lucide-react';
+import { Package, Plus, Save, Trash2, Box, Loader2 } from 'lucide-react';
 
 export default function MenuManagementPage() {
   const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const [itemsSubmitting, setItemsSubmitting] = useState(false);
   const [newItem, setNewItem] = useState({
     name: '',
     description: '',
@@ -20,7 +22,27 @@ export default function MenuManagementPage() {
     modelMetadata: null as any
   });
 
-  const handleAdd = () => {
+  const fetchMenu = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch('/api/menu');
+      const data = await res.json();
+      if (data.data) {
+        setMenuItems(data.data);
+      }
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Error", description: "Failed to load menu", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMenu();
+  }, []);
+
+  const handleAdd = async () => {
     if (!newItem.name || !newItem.price) {
       toast({
         title: "Missing fields",
@@ -30,29 +52,46 @@ export default function MenuManagementPage() {
       return;
     }
 
-    const item = {
-      id: Math.random().toString(36).substr(2, 9),
-      ...newItem,
-      price: parseFloat(newItem.price)
-    };
+    setItemsSubmitting(true);
+    try {
+      const res = await fetch('/api/menu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newItem,
+          price: newItem.price // API parses float
+        })
+      });
 
-    setMenuItems([...menuItems, item]);
-    setIsAdding(false);
-    setNewItem({ name: '', description: '', price: '', model3dUrl: '', modelMetadata: null });
+      if (!res.ok) throw new Error("Failed to create item");
 
-    toast({
-      title: "Item Added",
-      description: `${item.name} has been added to the menu.`
-    });
+      toast({
+        title: "Item Added",
+        description: `${newItem.name} has been added to the menu.`
+      });
+
+      setIsAdding(false);
+      setNewItem({ name: '', description: '', price: '', model3dUrl: '', modelMetadata: null });
+      fetchMenu();
+    } catch (error) {
+      toast({ title: "Error", description: "Could not save item", variant: "destructive" });
+    } finally {
+      setItemsSubmitting(false);
+    }
   };
 
   const removeItem = (id: string) => {
+    // TODO: Implement DELETE API
     setMenuItems(menuItems.filter(item => item.id !== id));
     toast({
       title: "Item Removed",
-      description: "Menu item has been deleted."
+      description: "Item removed from view (Persistence pending DELETE API)"
     });
   };
+
+  if (isLoading) {
+    return <div className="p-20 text-center"><Loader2 className="h-10 w-10 animate-spin mx-auto text-purple-600" /></div>;
+  }
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
@@ -113,15 +152,14 @@ export default function MenuManagementPage() {
             <div className="space-y-4">
               <Label className="text-sm font-bold uppercase tracking-wider text-slate-500">3D Asset Management</Label>
               <ModelUploader
-                onUploadComplete={(url, meta) => setNewItem({ ...newItem, model3dUrl: url, modelMetadata: meta })}
+                onUploadComplete={(url: string, meta: any) => setNewItem({ ...newItem, model3dUrl: url, modelMetadata: meta })}
               />
             </div>
           </CardContent>
           <CardFooter className="bg-slate-50 border-t border-slate-100 p-6 flex justify-end gap-4">
             <Button variant="ghost" onClick={() => setIsAdding(false)} className="px-8 rounded-xl h-12">Cancel</Button>
-            <Button onClick={handleAdd} className="bg-purple-600 hover:bg-purple-700 px-10 rounded-xl h-12 font-bold shadow-lg shadow-purple-500/30">
-              <Save className="w-5 h-5 mr-2" />
-              Save Item
+            <Button onClick={handleAdd} disabled={itemsSubmitting} className="bg-purple-600 hover:bg-purple-700 px-10 rounded-xl h-12 font-bold shadow-lg shadow-purple-500/30">
+              {itemsSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Save className="w-5 h-5 mr-2" /> Save Item</>}
             </Button>
           </CardFooter>
         </Card>
@@ -134,7 +172,6 @@ export default function MenuManagementPage() {
               <div className="h-48 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
                 <div className="w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500">
-                  {/* Simplified preview for card - in production might use a 2D thumbnail */}
                   <div className="bg-slate-100 w-full h-full flex items-center justify-center">
                     <Box className="w-12 h-12 text-purple-300 group-hover:animate-bounce" />
                   </div>
@@ -154,7 +191,7 @@ export default function MenuManagementPage() {
                   <h3 className="font-bold text-xl text-slate-900">{item.name}</h3>
                   <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{item.description}</p>
                 </div>
-                <p className="font-black text-purple-600 text-xl">${item.price}</p>
+                <p className="font-black text-purple-600 text-xl">${Number(item.price).toFixed(2)}</p>
               </div>
             </CardContent>
             <CardFooter className="p-6 border-t border-slate-50 flex justify-between gap-4">

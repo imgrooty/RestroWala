@@ -15,7 +15,8 @@ import {
   Search,
   Menu,
   Sparkles,
-  UtensilsCrossed
+  UtensilsCrossed,
+  Grid
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +35,7 @@ const NAV_ITEMS = [
   { label: 'Staff Orchestra', icon: Users, href: '/manager/staff' },
   { label: 'Live Orders', icon: ClipboardList, href: '/manager/orders' },
   { label: 'Menu Forge', icon: ChefHat, href: '/manager/menu-management' },
+  { label: 'Tables & QR', icon: Grid, href: '/manager/tables' }, // Added Table Management
   { label: 'Market Metrics', icon: BarChart3, href: '/manager/analytics' },
   { label: 'Configuration', icon: Settings, href: '/manager/settings' },
 ];

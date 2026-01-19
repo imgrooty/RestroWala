@@ -12,7 +12,8 @@ import {
   Package,
   Calendar,
   Server,
-  Bell
+  Bell,
+  Grid
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,7 +30,7 @@ export default function ManagerDashboardPage() {
             <ShieldCheck className="h-3 w-3" /> System Administrator
           </div>
           <h1 className="text-5xl font-black text-slate-900 tracking-tight">Mainframe <span className="text-primary italic">OS</span></h1>
-          <p className="text-slate-500 font-medium text-lg">Central nervous system for GourmetOS operations.</p>
+          <p className="text-slate-500 font-medium text-lg">Central nervous system for RestroWala operations.</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" className="rounded-2xl h-12 px-6 font-black border-2 border-slate-200 hover:bg-slate-50">
@@ -87,6 +88,13 @@ export default function ManagerDashboardPage() {
               icon={<Utensils className="h-8 w-8" />}
               href="/manager/menu-management"
               color="bg-primary text-white"
+            />
+            <ModuleCard
+              title="Table Management"
+              desc="QR Codes & Seating Layout"
+              icon={<Grid className="h-8 w-8" />}
+              href="/manager/tables"
+              color="bg-emerald-600 text-white"
             />
             <ModuleCard
               title="Staff Orchestra"

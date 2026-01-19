@@ -43,7 +43,13 @@ export default function StaffManagementPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    email: string;
+    password: string;
+    role: UserRole;
+    phone: string;
+  }>({
     name: '',
     email: '',
     password: '',
@@ -196,7 +202,7 @@ export default function StaffManagementPage() {
                   <Label htmlFor="add-role">Assignment Role</Label>
                   <Select
                     onValueChange={(val) => setFormData({ ...formData, role: val as UserRole })}
-                    defaultValue={formData.role}
+                    defaultValue={formData.role as string}
                   >
                     <SelectTrigger className="rounded-xl h-12">
                       <SelectValue placeholder="Select a role" />

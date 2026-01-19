@@ -43,13 +43,15 @@ export default function ProtectedRoute({
     // Check role-based access
     if (allowedRoles && user && !hasRole(allowedRoles)) {
       // Redirect to appropriate dashboard based on user's role
-      const redirectMap: Record<UserRole, string> = {
+      const redirectMap: Record<string, string> = {
         [UserRole.ADMIN]: '/manager/dashboard',
+        [UserRole.SUPER_ADMIN]: '/admin/dashboard',
         [UserRole.MANAGER]: '/manager/dashboard',
         [UserRole.KITCHEN_STAFF]: '/kitchen/orders',
         [UserRole.WAITER]: '/waiter/dashboard',
         [UserRole.CASHIER]: '/cashier/dashboard',
         [UserRole.CUSTOMER]: '/customer/menu',
+        [UserRole.CLEANER]: '/cleaner/dashboard',
       };
 
       router.push(redirectMap[user.role] || '/');

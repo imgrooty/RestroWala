@@ -220,6 +220,7 @@ export const roleHierarchy = {
   [UserRole.CASHIER]: 3,
   [UserRole.KITCHEN_STAFF]: 2,
   [UserRole.WAITER]: 1,
+  [(UserRole as any).CLEANER]: 1,
   [UserRole.CUSTOMER]: 0
 };
 

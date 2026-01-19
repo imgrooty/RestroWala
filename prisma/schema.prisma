@@ -23,6 +23,7 @@ enum UserRole {
   MANAGER
   ADMIN
   SUPER_ADMIN // Added for SaaS platform management
+  CLEANER
 }
 
 enum OrderStatus {

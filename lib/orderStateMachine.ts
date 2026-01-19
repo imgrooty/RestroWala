@@ -22,13 +22,15 @@ const TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 };
 
 // Role-based permissions for status changes
-const ROLE_PERMISSIONS: Record<UserRole, OrderStatus[]> = {
+const ROLE_PERMISSIONS: Record<string, OrderStatus[]> = {
   CUSTOMER: ['CANCELLED'], // Can only cancel pending orders
   WAITER: ['CONFIRMED', 'SERVED', 'CANCELLED'], // Can confirm, serve, or cancel
   CASHIER: ['SERVED', 'COMPLETED', 'CANCELLED'], // Can complete orders (payment)
   KITCHEN_STAFF: ['PREPARING', 'READY'], // Can start preparing and mark ready
   MANAGER: Object.values(OrderStatus), // Can change to any status
   ADMIN: Object.values(OrderStatus), // Can change to any status
+  SUPER_ADMIN: Object.values(OrderStatus), // Can change to any status
+  CLEANER: [], // No permissions for order status
 };
 
 // Status display information
