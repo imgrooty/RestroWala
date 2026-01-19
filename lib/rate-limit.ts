@@ -33,9 +33,19 @@ export async function checkRateLimit(
   config: RateLimitConfig
 ): Promise<{ limited: boolean; remaining: number; resetIn: number }> {
   try {
-    // Ensure Redis is connected
+    // Ensure Redis is connected (connection is managed by the redis client singleton)
     if (!redisClient.isOpen) {
-      await redisClient.connect();
+      try {
+        await redisClient.connect();
+      } catch (connectError) {
+        console.error('Redis connection failed:', connectError);
+        // Fail closed - return rate limited to be safe
+        return {
+          limited: true,
+          remaining: 0,
+          resetIn: config.windowSeconds,
+        };
+      }
     }
 
     const key = `rate_limit:${identifier}`;
@@ -74,10 +84,12 @@ export async function checkRateLimit(
     };
   } catch (error) {
     console.error('Rate limit check error:', error);
-    // Fail open - don't block requests if Redis is down
+    // Fail closed - rate limit by default for security
+    // Log the failure for monitoring
+    console.error(`SECURITY: Rate limiting failed for ${identifier}. Blocking request as a precaution.`);
     return {
-      limited: false,
-      remaining: config.maxRequests,
+      limited: true,
+      remaining: 0,
       resetIn: config.windowSeconds,
     };
   }
