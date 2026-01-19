@@ -17,11 +17,6 @@ export interface RateLimitConfig {
    * Time window in seconds
    */
   windowSeconds: number;
-  
-  /**
-   * Optional custom identifier (defaults to IP address)
-   */
-  identifier?: string;
 }
 
 /**
@@ -46,6 +41,12 @@ export async function checkRateLimit(
           resetIn: config.windowSeconds,
         };
       }
+    }
+
+    // Wait a moment to ensure connection is fully established
+    // This prevents race conditions with immediate Redis operations
+    if (!redisClient.isReady) {
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     const key = `rate_limit:${identifier}`;
@@ -98,6 +99,11 @@ export async function checkRateLimit(
 
 /**
  * Get client identifier from request (IP address)
+ * 
+ * SECURITY NOTE: This function trusts X-Forwarded-For and X-Real-IP headers.
+ * Only use this behind a trusted reverse proxy (nginx, CloudFlare, etc.) that
+ * properly sets these headers. Direct exposure without a proxy allows header
+ * spoofing which can bypass rate limiting.
  */
 export function getClientIdentifier(request: Request): string {
   // Check for forwarded IP (from proxy/load balancer)
@@ -112,24 +118,30 @@ export function getClientIdentifier(request: Request): string {
     return realIp;
   }
   
-  // Fallback to connection remote address
-  return 'unknown';
+  // If we cannot determine an IP address, throw an error
+  // This prevents all unidentifiable requests from sharing the same rate limit bucket
+  throw new Error('Client IP address could not be determined');
 }
 
 /**
  * Rate limit configurations for different endpoints
  */
 export const RATE_LIMITS = {
-  // Authentication endpoints - strict limits
-  LOGIN: { maxRequests: 5, windowSeconds: 300 }, // 5 attempts per 5 minutes
+  // Authentication endpoints - strict limits (currently applied)
   FORGOT_PASSWORD: { maxRequests: 3, windowSeconds: 3600 }, // 3 attempts per hour
   RESET_PASSWORD: { maxRequests: 3, windowSeconds: 3600 }, // 3 attempts per hour
+  
+  // TODO: Apply these rate limits to their respective endpoints
+  // LOGIN: Apply to NextAuth credential provider in app/api/auth/[...nextauth]/route.ts
+  LOGIN: { maxRequests: 5, windowSeconds: 300 }, // 5 attempts per 5 minutes
+  
+  // REGISTER: Apply to public registration endpoint when implemented
   REGISTER: { maxRequests: 3, windowSeconds: 3600 }, // 3 attempts per hour
   
-  // API endpoints - moderate limits
+  // API_WRITE/API_READ: Apply to general API endpoints via middleware
   API_WRITE: { maxRequests: 30, windowSeconds: 60 }, // 30 requests per minute
   API_READ: { maxRequests: 100, windowSeconds: 60 }, // 100 requests per minute
   
-  // File upload - strict limits
+  // UPLOAD: Apply to file upload endpoints (app/api/upload/*)
   UPLOAD: { maxRequests: 10, windowSeconds: 300 }, // 10 uploads per 5 minutes
 };

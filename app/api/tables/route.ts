@@ -53,10 +53,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No restaurant associated' }, { status: 400 });
     }
 
+    // Parse and validate numeric inputs
+    const parsedNumber = parseInt(body.number, 10);
+    const parsedCapacity = parseInt(body.capacity, 10);
+
+    if (Number.isNaN(parsedNumber) || Number.isNaN(parsedCapacity)) {
+      return NextResponse.json(
+        { error: 'Invalid table number or capacity' },
+        { status: 400 }
+      );
+    }
+
     // Validate input using schema
     const validation = tableSchema.safeParse({
-      number: parseInt(body.number, 10),
-      capacity: parseInt(body.capacity, 10),
+      number: parsedNumber,
+      capacity: parsedCapacity,
       floor: body.floor,
       location: body.location,
       status: body.status,

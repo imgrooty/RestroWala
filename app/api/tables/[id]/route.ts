@@ -82,7 +82,15 @@ export async function GET(
     }
 
     // Authorization: Verify table belongs to user's restaurant
-    if (session.user.restaurantId && table.restaurantId !== session.user.restaurantId) {
+    // Require restaurantId to be present - users without restaurant cannot access any tables
+    if (!session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: No restaurant associated with your account' },
+        { status: 403 }
+      );
+    }
+
+    if (table.restaurantId !== session.user.restaurantId) {
       return NextResponse.json(
         { error: 'Forbidden: You do not have access to this table' },
         { status: 403 }
@@ -151,7 +159,15 @@ export async function PUT(
     }
 
     // Authorization: Verify table belongs to user's restaurant
-    if (session.user.restaurantId && existingTable.restaurantId !== session.user.restaurantId) {
+    // Require restaurantId to be present - users without restaurant cannot modify any tables
+    if (!session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: No restaurant associated with your account' },
+        { status: 403 }
+      );
+    }
+
+    if (existingTable.restaurantId !== session.user.restaurantId) {
       return NextResponse.json(
         { error: 'Forbidden: You do not have access to this table' },
         { status: 403 }
@@ -270,7 +286,15 @@ export async function DELETE(
     }
 
     // Authorization: Verify table belongs to user's restaurant
-    if (session.user.restaurantId && table.restaurantId !== session.user.restaurantId) {
+    // Require restaurantId to be present - users without restaurant cannot delete any tables
+    if (!session.user.restaurantId) {
+      return NextResponse.json(
+        { error: 'Forbidden: No restaurant associated with your account' },
+        { status: 403 }
+      );
+    }
+
+    if (table.restaurantId !== session.user.restaurantId) {
       return NextResponse.json(
         { error: 'Forbidden: You do not have access to this table' },
         { status: 403 }
