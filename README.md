@@ -78,6 +78,22 @@ npm run docker:up
 
 ---
 
+## 🚀 Deployment
+
+### Deploy to Vercel
+
+This application is optimized for deployment on Vercel. For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+**Quick Deploy:**
+1. Push your code to GitHub
+2. Import your repository on [Vercel](https://vercel.com/new)
+3. Configure environment variables (DATABASE_URL, REDIS_URL, NEXTAUTH_SECRET, etc.)
+4. Deploy!
+
+For local development and other deployment options, continue reading below.
+
+---
+
 ## 🔑 Environment Variables Reference
 
 | Variable | Description |
