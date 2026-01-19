@@ -93,9 +93,15 @@ export default function AdminDashboardPage() {
                     <Link href="/admin/billing">
                         <AdminModule title="Billing & Plans" desc="Subscription tiers and revenue attribution." />
                     </Link>
-                    <AdminModule title="System Logs" desc="Raw server logs and error tracking." />
-                    <AdminModule title="Feature Flags" desc="Toggle beta features for specific tenants." />
-                    <AdminModule title="API Keys" desc="Manage third-party integration access tokens." />
+                    <Link href="/admin/logs">
+                        <AdminModule title="System Logs" desc="Raw server logs and error tracking." />
+                    </Link>
+                    <Link href="/admin/feature-flags">
+                        <AdminModule title="Feature Flags" desc="Toggle beta features for specific tenants." />
+                    </Link>
+                    <Link href="/admin/api-keys">
+                        <AdminModule title="API Keys" desc="Manage third-party integration access tokens." />
+                    </Link>
                 </div>
             </div>
         </div>

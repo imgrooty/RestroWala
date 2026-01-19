@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { getGlobalUsers, manageUserStatus, updateUserRole } from '../actions';
+import { getGlobalUsers, manageUserStatus, updateUserRole, deleteUser } from '../actions';
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -51,6 +51,19 @@ export default function UsersPage() {
         const res = await updateUserRole(userId, newRole);
         if (res.success) {
             toast({ title: "Success", description: "User role updated" });
+            fetchUsers();
+        } else {
+            toast({ title: "Error", description: res.error, variant: "destructive" });
+        }
+    };
+
+    const handleDeleteUser = async (userId: string, name: string) => {
+        if (!confirm(`Are you sure you want to delete user "${name}"? This action cannot be undone.`)) {
+            return;
+        }
+        const res = await deleteUser(userId);
+        if (res.success) {
+            toast({ title: "Success", description: "User deleted successfully" });
             fetchUsers();
         } else {
             toast({ title: "Error", description: res.error, variant: "destructive" });
@@ -160,7 +173,10 @@ export default function UsersPage() {
                                                     <DropdownMenuItem className="font-medium p-3 rounded-lg focus:bg-slate-50 text-slate-700">
                                                         Reset Password
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="font-medium p-3 rounded-lg focus:bg-rose-50 text-rose-700">
+                                                    <DropdownMenuItem
+                                                        className="font-medium p-3 rounded-lg focus:bg-rose-50 text-rose-700"
+                                                        onClick={() => handleDeleteUser(user.id, user.name)}
+                                                    >
                                                         Delete User
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>

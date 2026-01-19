@@ -109,7 +109,7 @@ model User {
   
   // Multi-tenancy
   restaurantId  String?
-  restaurant    Restaurant? @relation("RestaurantStaff", fields: [restaurantId], references: [id])
+  restaurant    Restaurant? @relation("RestaurantStaff", fields: [restaurantId], references: [id], onDelete: Cascade)
   
   // Relations
   orders        Order[]
@@ -119,6 +119,7 @@ model User {
   assignedTables Table[]   @relation("TableWaiter")
   roleDetails   Role?     @relation(fields: [roleId], references: [id])
   roleId        String?
+  systemLogs    SystemLog[]
   
   @@index([email])
   @@index([role])
@@ -524,4 +525,20 @@ model Subscription {
   
   @@index([status])
   @@index([tier])
+}
+
+// ==================== SYSTEM LOGS ====================
+
+model SystemLog {
+  id        String   @id @default(cuid())
+  event     String
+  level     String   // INFO, WARN, ERROR
+  message   String   @db.Text
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([level])
+  @@index([createdAt])
+  @@index([userId])
 }

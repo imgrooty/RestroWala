@@ -112,8 +112,22 @@ export default function RestaurantsPage() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="email" className="font-bold">Contact Email</Label>
+                                <Label htmlFor="email" className="font-bold">Restaurant Email</Label>
                                 <Input id="email" name="email" type="email" placeholder="contact@domain.com" required className="rounded-xl" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="managerName" className="font-bold">Manager Name</Label>
+                                    <Input id="managerName" name="managerName" placeholder="Full Name" required className="rounded-xl" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="managerEmail" className="font-bold">Manager Email</Label>
+                                    <Input id="managerEmail" name="managerEmail" type="email" placeholder="manager@domain.com" required className="rounded-xl" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="managerPassword" className="font-bold">Manager Password</Label>
+                                <Input id="managerPassword" name="managerPassword" type="password" placeholder="••••••••" required className="rounded-xl" />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="phone" className="font-bold">Phone</Label>
