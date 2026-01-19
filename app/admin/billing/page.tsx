@@ -16,12 +16,40 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 
+interface Subscription {
+    id: string;
+    plan: string;
+    status: string;
+    currentPeriodStart: Date;
+    currentPeriodEnd: Date;
+    restaurant: {
+        name: string;
+        slug: string;
+    } | null;
+}
+
+interface Payment {
+    id: string;
+    amount: number;
+    status: string;
+    method: string;
+    createdAt: Date;
+    order: {
+        id: string;
+        restaurant: {
+            name: string;
+            slug: string;
+        } | null;
+    } | null;
+}
+
 export default function BillingPage() {
-    const [subscriptions, setSubscriptions] = useState<any[]>([]);
-    const [payments, setPayments] = useState<any[]>([]);
+    const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+    const [payments, setPayments] = useState<Payment[]>([]);
     const [metrics, setMetrics] = useState({
         totalRevenue: 0,
         transactionCount: 0,
+        completedTransactionCount: 0,
         avgTicket: 0
     });
     const [loading, setLoading] = useState(true);
@@ -65,6 +93,17 @@ export default function BillingPage() {
             case 'TRIALING': return 'bg-blue-500';
             case 'PAST_DUE': return 'bg-amber-500';
             case 'CANCELED': return 'bg-rose-500';
+            default: return 'bg-slate-500';
+        }
+    };
+
+    const getPaymentStatusColor = (status: string) => {
+        switch (status) {
+            case 'COMPLETED': return 'bg-emerald-500';
+            case 'PENDING': return 'bg-blue-500';
+            case 'PROCESSING': return 'bg-indigo-500';
+            case 'FAILED': return 'bg-rose-500';
+            case 'REFUNDED': return 'bg-amber-500';
             default: return 'bg-slate-500';
         }
     };
@@ -166,20 +205,23 @@ export default function BillingPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Card className="border-none shadow-sm rounded-3xl bg-white p-6">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Total Volume</p>
+                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Total Revenue</p>
                         <h3 className="text-3xl font-black text-slate-900">
                             ${metrics.totalRevenue.toLocaleString()}
                         </h3>
+                        <p className="text-xs text-slate-500 mt-1">From {metrics.completedTransactionCount} completed</p>
                     </Card>
                     <Card className="border-none shadow-sm rounded-3xl bg-white p-6">
                         <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Transaction Count</p>
                         <h3 className="text-3xl font-black text-slate-900">{metrics.transactionCount}</h3>
+                        <p className="text-xs text-slate-500 mt-1">{metrics.completedTransactionCount} completed</p>
                     </Card>
                     <Card className="border-none shadow-sm rounded-3xl bg-white p-6">
                         <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Avg. Ticket</p>
                         <h3 className="text-3xl font-black text-slate-900">
                             ${metrics.avgTicket.toFixed(2)}
                         </h3>
+                        <p className="text-xs text-slate-500 mt-1">Based on completed only</p>
                     </Card>
                 </div>
 
@@ -229,7 +271,7 @@ export default function BillingPage() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge className={`${payment.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-amber-500'} text-white border-none`}>
+                                                <Badge className={`${getPaymentStatusColor(payment.status)} text-white border-none`}>
                                                     {payment.status}
                                                 </Badge>
                                             </TableCell>

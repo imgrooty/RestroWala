@@ -127,7 +127,17 @@ export default function RestaurantsPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="managerPassword" className="font-bold">Manager Password</Label>
-                                <Input id="managerPassword" name="managerPassword" type="password" placeholder="••••••••" required className="rounded-xl" />
+                                <Input 
+                                    id="managerPassword" 
+                                    name="managerPassword" 
+                                    type="password" 
+                                    placeholder="••••••••" 
+                                    required 
+                                    className="rounded-xl"
+                                    minLength={8}
+                                    title="Password must be at least 8 characters long"
+                                    autoComplete="new-password"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="phone" className="font-bold">Phone</Label>
