@@ -1,0 +1,307 @@
+# Restaurant Management System - Cursor AI Rules
+
+## Project Context
+This is a restaurant management system with AR/VR menu capabilities built with Next.js, TypeScript, and modern web technologies.
+
+## Tech Stack Rules
+
+### Framework & Language
+- ALWAYS use Next.js 14+ with App Router
+- ALWAYS use TypeScript with strict mode
+- NEVER use JavaScript files
+- ALWAYS use 'use client' or 'use server' directives appropriately
+
+### Styling
+- ALWAYS use Tailwind CSS for styling
+- PREFER Shadcn/ui components over custom components
+- NEVER use inline styles or CSS modules
+- ALWAYS make designs mobile-first and responsive
+
+### Database & ORM
+- ALWAYS use Prisma ORM
+- ALWAYS define proper TypeScript types from Prisma schema
+- NEVER use raw SQL queries without Prisma
+- ALWAYS handle database errors with try-catch
+
+### State Management
+- USE React hooks (useState, useEffect, useContext) for client state
+- USE Server Components for data fetching when possible
+- USE React Query/SWR for client-side data fetching with caching
+- NEVER use Redux unless specifically requested
+
+### Real-time Features
+- ALWAYS use Socket.io for real-time updates
+- IMPLEMENT proper connection/disconnection handling
+- ALWAYS type Socket.io events with TypeScript
+
+### AR/VR Components
+- ALWAYS use @google/model-viewer for AR features
+- USE Three.js only when model-viewer is insufficient
+- OPTIMIZE 3D models (recommend GLB format)
+- ALWAYS provide fallback for non-AR devices
+
+## Code Style Rules
+
+### File Naming
+- Components: PascalCase (e.g., `UserProfile.tsx`)
+- Utilities: camelCase (e.g., `formatDate.ts`)
+- API routes: lowercase with hyphens (e.g., `get-orders.ts`)
+- Types: PascalCase in `types` folder
+
+### Component Structure
+```typescript
+// ALWAYS follow this structure
+'use client'; // if client component
+
+import statements...
+
+// Types/Interfaces
+interface Props {
+  // ...
+}
+
+// Component
+export default function ComponentName({ props }: Props) {
+  // Hooks first
+  // Event handlers
+  // Render logic
+  
+  return (
+    // JSX
+  );
+}
+```
+
+### API Route Structure
+```typescript
+// ALWAYS follow this structure
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+
+export async function GET(request: NextRequest) {
+  try {
+    // Auth check
+    // Business logic
+    // Return response
+    return NextResponse.json({ data });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Error message' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### Error Handling
+- ALWAYS use try-catch blocks in async functions
+- ALWAYS return user-friendly error messages
+- ALWAYS log errors to console in development
+- NEVER expose sensitive error details to client
+
+### Type Safety
+- ALWAYS define TypeScript interfaces/types
+- NEVER use 'any' type (use 'unknown' if necessary)
+- ALWAYS use Zod for runtime validation
+- ALWAYS type API responses
+
+## Feature-Specific Rules
+
+### Authentication
+- USE NextAuth.js for all authentication
+- IMPLEMENT role-based access control (RBAC)
+- PROTECT all API routes with authentication middleware
+- STORE sensitive data in environment variables only
+
+### Real-time Orders
+- EMIT Socket.io events for all order status changes
+- UPDATE all connected clients (kitchen, waiter, customer)
+- IMPLEMENT optimistic updates on client side
+- HANDLE connection failures gracefully
+
+### AR Menu
+- LOAD 3D models lazily
+- SHOW loading states for 3D models
+- PROVIDE 2D fallback images
+- OPTIMIZE for mobile performance
+
+### Database Queries
+- ALWAYS use Prisma's type-safe queries
+- IMPLEMENT pagination for list queries
+- USE database indexes for frequently queried fields
+- AVOID N+1 query problems
+
+### Form Handling
+- USE React Hook Form for all forms
+- VALIDATE with Zod schemas
+- SHOW field-level error messages
+- IMPLEMENT optimistic UI updates
+
+## Performance Rules
+
+- ALWAYS use Next.js Image component for images
+- IMPLEMENT code splitting with dynamic imports
+- USE React.memo for expensive components
+- LAZY load AR/3D components
+- IMPLEMENT proper caching strategies
+- MINIMIZE bundle size
+
+## Security Rules
+
+- NEVER expose API keys in client code
+- ALWAYS sanitize user inputs
+- IMPLEMENT rate limiting on API routes
+- USE HTTPS in production
+- VALIDATE all data on server side
+- IMPLEMENT CSRF protection
+
+## Testing Rules (when generating tests)
+
+- WRITE unit tests for utilities
+- WRITE integration tests for API routes
+- USE React Testing Library for component tests
+- MOCK external dependencies
+- AIM for >80% code coverage on critical paths
+
+## Documentation Rules
+
+- ADD JSDoc comments to complex functions
+- DOCUMENT all API routes with expected input/output
+- MAINTAIN README with setup instructions
+- DOCUMENT environment variables
+
+## Git Commit Message Format
+
+When suggesting commits:
+```
+feat: Add AR menu viewer component
+fix: Resolve order status update issue
+refactor: Improve database query performance
+docs: Update API documentation
+```
+
+## Folder Structure to Follow
+
+```
+restaurant-management/
+├── app/
+│   ├── (auth)/
+│   │   ├── login/
+│   │   └── register/
+│   ├── (customer)/
+│   │   ├── menu/
+│   │   └── order/
+│   ├── (manager)/
+│   │   ├── dashboard/
+│   │   ├── analytics/
+│   │   └── menu-management/
+│   ├── (waiter)/
+│   │   └── dashboard/
+│   ├── (kitchen)/
+│   │   └── orders/
+│   ├── api/
+│   │   ├── auth/
+│   │   ├── orders/
+│   │   ├── menu/
+│   │   └── tables/
+│   └── layout.tsx
+├── components/
+│   ├── ui/ (shadcn)
+│   ├── shared/
+│   ├── customer/
+│   ├── manager/
+│   ├── waiter/
+│   └── kitchen/
+├── lib/
+│   ├── prisma.ts
+│   ├── auth.ts
+│   ├── socket.ts
+│   └── utils.ts
+├── types/
+├── hooks/
+├── prisma/
+│   └── schema.prisma
+├── public/
+│   └── models/ (3D models)
+└── tests/
+```
+
+## Common Patterns
+
+### Server Component Data Fetching
+```typescript
+async function getData() {
+  const data = await prisma.model.findMany();
+  return data;
+}
+
+export default async function Page() {
+  const data = await getData();
+  return <Component data={data} />;
+}
+```
+
+### Client Component with Real-time
+```typescript
+'use client';
+
+import { useSocket } from '@/hooks/useSocket';
+
+export default function Component() {
+  const socket = useSocket();
+  
+  useEffect(() => {
+    socket.on('event', handleEvent);
+    return () => socket.off('event');
+  }, []);
+}
+```
+
+### API Route with Auth
+```typescript
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  
+  if (!session) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+  
+  // Handle request
+}
+```
+
+## When in Doubt
+
+- PRIORITIZE type safety over convenience
+- CHOOSE simplicity over cleverness
+- PREFER server components over client components
+- OPTIMIZE for performance and user experience
+- FOLLOW Next.js best practices
+- ASK for clarification rather than assuming
+
+## Generate Code That Is
+
+- Production-ready
+- Well-typed
+- Performant
+- Secure
+- Maintainable
+- Well-documented
+- Mobile-responsive
+- Accessible (WCAG 2.1 AA)
+
+## Never Generate Code That
+
+- Uses deprecated APIs
+- Ignores TypeScript errors
+- Has security vulnerabilities
+- Lacks error handling
+- Is not mobile-responsive
+- Has poor performance
+- Violates Next.js conventions
