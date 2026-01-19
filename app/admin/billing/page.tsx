@@ -49,6 +49,7 @@ export default function BillingPage() {
     const [metrics, setMetrics] = useState({
         totalRevenue: 0,
         transactionCount: 0,
+        completedTransactionCount: 0,
         avgTicket: 0
     });
     const [loading, setLoading] = useState(true);
@@ -204,20 +205,23 @@ export default function BillingPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Card className="border-none shadow-sm rounded-3xl bg-white p-6">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Total Volume</p>
+                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Total Revenue</p>
                         <h3 className="text-3xl font-black text-slate-900">
                             ${metrics.totalRevenue.toLocaleString()}
                         </h3>
+                        <p className="text-xs text-slate-500 mt-1">From {metrics.completedTransactionCount} completed</p>
                     </Card>
                     <Card className="border-none shadow-sm rounded-3xl bg-white p-6">
                         <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Transaction Count</p>
                         <h3 className="text-3xl font-black text-slate-900">{metrics.transactionCount}</h3>
+                        <p className="text-xs text-slate-500 mt-1">{metrics.completedTransactionCount} completed</p>
                     </Card>
                     <Card className="border-none shadow-sm rounded-3xl bg-white p-6">
                         <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Avg. Ticket</p>
                         <h3 className="text-3xl font-black text-slate-900">
                             ${metrics.avgTicket.toFixed(2)}
                         </h3>
+                        <p className="text-xs text-slate-500 mt-1">Based on completed only</p>
                     </Card>
                 </div>
 

@@ -25,6 +25,8 @@ interface SystemLog {
         name: string | null;
         email: string;
     } | null;
+    userName: string | null;
+    userEmail: string | null;
     createdAt: Date;
 }
 
