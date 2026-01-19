@@ -42,6 +42,13 @@ export interface TableStatusChangedEvent {
 
 /**
  * Socket event map for type safety
+ * Use this interface to ensure type-safe Socket.io event handlers
+ * 
+ * Example usage:
+ * ```typescript
+ * socket.on('order:created', (data: OrderCreatedEvent) => { ... });
+ * socket.on('order:status-changed', (data: OrderStatusChangedEvent) => { ... });
+ * ```
  */
 export interface SocketEvents {
   'order:created': (data: OrderCreatedEvent) => void;

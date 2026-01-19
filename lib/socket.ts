@@ -6,6 +6,8 @@
  * This stub prevents build errors while maintaining API compatibility.
  */
 
+import { OrderStatusChangedEvent, TableStatusChangedEvent } from '@/types/socket';
+
 // Mock Socket.io server instance
 let ioInstance: any = null;
 
@@ -38,20 +40,7 @@ export function isIOInitialized(): boolean {
  * Emit order status changed event
  * Stub implementation - logs to console in development
  */
-export function emitOrderStatusChanged(data: {
-  orderId: string;
-  orderNumber: string;
-  status: string;
-  previousStatus: string;
-  tableId: string;
-  tableNumber: number;
-  timestamp: Date;
-  updatedBy: {
-    id: string;
-    name: string;
-    role: string;
-  };
-}): void {
+export function emitOrderStatusChanged(data: OrderStatusChangedEvent): void {
   if (process.env.NODE_ENV === 'development') {
     console.log('[Socket.io Stub] Order status changed:', data);
   }
@@ -67,13 +56,7 @@ export function emitOrderStatusChanged(data: {
  * Emit table status changed event
  * Stub implementation - logs to console in development
  */
-export function emitTableStatusChanged(data: {
-  tableId: string;
-  tableNumber: number;
-  status: string;
-  previousStatus: string;
-  waiterId: string | null;
-}): void {
+export function emitTableStatusChanged(data: TableStatusChangedEvent): void {
   if (process.env.NODE_ENV === 'development') {
     console.log('[Socket.io Stub] Table status changed:', data);
   }
