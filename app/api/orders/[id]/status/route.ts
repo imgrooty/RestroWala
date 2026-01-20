@@ -163,10 +163,21 @@ export async function PATCH(
 
       // If no active orders, set table to available
       if (activeOrders === 0) {
-        await prisma.table.update({
+        const updatedTable = await prisma.table.update({
           where: { id: order.tableId },
           data: { status: 'AVAILABLE' },
         });
+
+        // Emit table status change
+        import('@/lib/socket').then(({ emitTableStatusChanged }) => {
+          emitTableStatusChanged({
+            tableId: updatedTable.id,
+            tableNumber: updatedTable.number,
+            status: updatedTable.status as any,
+            previousStatus: 'OCCUPIED',
+            waiterId: updatedTable.waiterId,
+          });
+        }).catch(err => console.error('Failed to emit table:status-changed:', err));
       }
     }
 

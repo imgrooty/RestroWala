@@ -1,6 +1,6 @@
 /**
  * GET /api/tables/[id] - Get single table
- * PUT /api/tables/[id] - Update table (MANAGER only)
+ * PATCH /api/tables/[id] - Update table (MANAGER, WAITER, CASHIER, CLEANER)
  * DELETE /api/tables/[id] - Delete table (MANAGER only)
  * 
  * Single table operations
@@ -11,6 +11,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+
 const updateTableSchema = z.object({
   number: z.number().min(1).optional(),
   capacity: z.number().min(1).optional(),
@@ -82,7 +83,6 @@ export async function GET(
     }
 
     // Authorization: Verify table belongs to user's restaurant
-    // Require restaurantId to be present - users without restaurant cannot access any tables
     if (!session.user.restaurantId) {
       return NextResponse.json(
         { error: 'Forbidden: No restaurant associated with your account' },
@@ -108,17 +108,17 @@ export async function GET(
 }
 
 /**
- * PUT /api/tables/[id]
- * Update table (MANAGER only)
+ * PATCH /api/tables/[id]
+ * Update table (MANAGER, WAITER, CASHIER, CLEANER)
  */
-export async function PUT(
+export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
 
-    // Check authentication and authorization
+    // Check authentication
     if (!session) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -126,9 +126,13 @@ export async function PUT(
       );
     }
 
-    if (session.user.role !== 'MANAGER' && session.user.role !== 'ADMIN') {
+    const userRole = session.user.role as string;
+    const isManager = userRole === 'MANAGER' || userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
+    const isStaff = ['WAITER', 'CASHIER', 'CLEANER'].includes(userRole);
+
+    if (!isManager && !isStaff) {
       return NextResponse.json(
-        { error: 'Forbidden: Only managers can update tables' },
+        { error: 'Forbidden' },
         { status: 403 }
       );
     }
@@ -159,7 +163,6 @@ export async function PUT(
     }
 
     // Authorization: Verify table belongs to user's restaurant
-    // Require restaurantId to be present - users without restaurant cannot modify any tables
     if (!session.user.restaurantId) {
       return NextResponse.json(
         { error: 'Forbidden: No restaurant associated with your account' },
@@ -174,35 +177,22 @@ export async function PUT(
       );
     }
 
-    // If updating table number, check for conflicts
-    if (data.number && data.number !== existingTable.number) {
-      const conflictingTable = await prisma.table.findFirst({
-        where: {
-          number: data.number,
-          restaurantId: existingTable.restaurantId,
-          id: { not: params.id },
-        },
-      });
-
-      if (conflictingTable) {
-        return NextResponse.json(
-          { error: 'A table with this number already exists' },
-          { status: 409 }
-        );
-      }
+    // Update table
+    const updateData: any = {};
+    if (isManager) {
+      if (data.number !== undefined) updateData.number = data.number;
+      if (data.capacity !== undefined) updateData.capacity = data.capacity;
+      if (data.floor !== undefined) updateData.floor = data.floor;
+      if (data.location !== undefined) updateData.location = data.location;
+      if (data.waiterId !== undefined) updateData.waiterId = data.waiterId === '' ? null : data.waiterId;
     }
 
-    // Update table
+    // Both managers and staff can update status
+    if (data.status !== undefined) updateData.status = data.status;
+
     const table = await prisma.table.update({
       where: { id: params.id },
-      data: {
-        number: data.number,
-        capacity: data.capacity,
-        floor: data.floor,
-        location: data.location,
-        status: data.status,
-        waiterId: data.waiterId === '' ? null : data.waiterId,
-      },
+      data: updateData,
       include: {
         waiter: {
           select: {
@@ -269,13 +259,6 @@ export async function DELETE(
     // Check if table exists
     const table = await prisma.table.findUnique({
       where: { id: params.id },
-      include: {
-        _count: {
-          select: {
-            orders: true,
-          },
-        },
-      },
     });
 
     if (!table) {
@@ -286,7 +269,6 @@ export async function DELETE(
     }
 
     // Authorization: Verify table belongs to user's restaurant
-    // Require restaurantId to be present - users without restaurant cannot delete any tables
     if (!session.user.restaurantId) {
       return NextResponse.json(
         { error: 'Forbidden: No restaurant associated with your account' },

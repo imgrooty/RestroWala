@@ -292,15 +292,22 @@ export async function POST(request: NextRequest) {
     });
 
     // Update table status to OCCUPIED if not already
-    await prisma.table.update({
+    const updatedTable = await prisma.table.update({
       where: { id: data.tableId },
       data: { status: 'OCCUPIED' },
     });
 
-    // Emit socket event for new order
-    import('@/lib/socket').then(({ emitOrderCreated }) => {
+    // Emit socket events
+    import('@/lib/socket').then(({ emitOrderCreated, emitTableStatusChanged }) => {
       emitOrderCreated({ order });
-    }).catch(err => console.error('Failed to emit order:created:', err));
+      emitTableStatusChanged({
+        tableId: updatedTable.id,
+        tableNumber: updatedTable.number,
+        status: updatedTable.status as any,
+        previousStatus: table.status as any,
+        waiterId: updatedTable.waiterId,
+      });
+    }).catch(err => console.error('Failed to emit socket events:', err));
 
     return NextResponse.json(
       {

@@ -94,3 +94,11 @@ export const emitOrderCreated = (data: { order: any }) => {
     }
     global.io.emit('order:created', data);
 };
+
+export const emitReservationCreated = (data: { reservation: any }) => {
+    if (!global.io) {
+        console.warn('Cannot emit reservation creation: Socket.io not initialized');
+        return;
+    }
+    global.io.emit('reservation:created', data);
+};
