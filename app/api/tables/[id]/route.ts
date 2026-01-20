@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { TableStatus } from '@/types/prisma';
 import { z } from 'zod';
 
 const updateTableSchema = z.object({
@@ -139,6 +140,15 @@ export async function PATCH(
 
     // Parse and validate request body
     const body = await request.json();
+
+    // Staff are only allowed to update status; require it to be present
+    if (isStaff && body.status === undefined) {
+      return NextResponse.json(
+        { error: 'Status is required for staff updates' },
+        { status: 400 }
+      );
+    }
+
     const validation = updateTableSchema.safeParse(body);
 
     if (!validation.success) {
@@ -177,6 +187,24 @@ export async function PATCH(
       );
     }
 
+    // If updating table number, check for conflicts
+    if (isManager && data.number && data.number !== existingTable.number) {
+      const conflictingTable = await prisma.table.findFirst({
+        where: {
+          number: data.number,
+          restaurantId: existingTable.restaurantId,
+          id: { not: params.id },
+        },
+      });
+
+      if (conflictingTable) {
+        return NextResponse.json(
+          { error: 'A table with this number already exists' },
+          { status: 409 }
+        );
+      }
+    }
+
     // Update table
     const updateData: any = {};
     if (isManager) {
@@ -205,13 +233,13 @@ export async function PATCH(
     });
 
     // Emit real-time event if status changed
-    if (data.status && data.status !== existingTable.status) {
+    if (data.status && data.status !== (existingTable.status as string)) {
       import('@/lib/socket').then(({ emitTableStatusChanged }) => {
         emitTableStatusChanged({
           tableId: table.id,
           tableNumber: table.number,
-          status: table.status as any,
-          previousStatus: existingTable.status as any,
+          status: table.status as TableStatus,
+          previousStatus: existingTable.status as TableStatus,
           waiterId: table.waiterId,
         });
       }).catch(err => console.error('Failed to emit table:status-changed:', err));

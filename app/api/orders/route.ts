@@ -14,7 +14,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { createOrderSchema } from '@/lib/validations';
-import { OrderStatus, UserRole } from '@/types/prisma';
+import { OrderStatus, UserRole, TableStatus } from '@/types/prisma';
 // Socket.io logic removed
 
 /**
@@ -303,8 +303,8 @@ export async function POST(request: NextRequest) {
       emitTableStatusChanged({
         tableId: updatedTable.id,
         tableNumber: updatedTable.number,
-        status: updatedTable.status as any,
-        previousStatus: table.status as any,
+        status: updatedTable.status as TableStatus,
+        previousStatus: table.status as TableStatus,
         waiterId: updatedTable.waiterId,
       });
     }).catch(err => console.error('Failed to emit socket events:', err));

@@ -9,9 +9,9 @@ import { tableSchema } from '@/lib/validations';
 export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    const allowedRoles: string[] = [UserRole.MANAGER, UserRole.ADMIN, UserRole.WAITER, UserRole.CASHIER, UserRole.CLEANER, (UserRole as any).SUPER_ADMIN];
+    const allowedRoles: string[] = [UserRole.MANAGER, UserRole.ADMIN, UserRole.WAITER, UserRole.CASHIER, UserRole.CLEANER, UserRole.SUPER_ADMIN];
 
-    if (!session || !allowedRoles.includes(session.user.role)) {
+    if (!session || !allowedRoles.includes(session.user.role as string)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

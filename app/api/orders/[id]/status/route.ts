@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { OrderStatus, UserRole } from '@/types/prisma';
+import { OrderStatus, UserRole, TableStatus } from '@/types/prisma';
 import { validateTransition } from '@/lib/orderStateMachine';
 import { z } from 'zod';
 
@@ -173,8 +173,8 @@ export async function PATCH(
           emitTableStatusChanged({
             tableId: updatedTable.id,
             tableNumber: updatedTable.number,
-            status: updatedTable.status as any,
-            previousStatus: 'OCCUPIED',
+            status: updatedTable.status as TableStatus,
+            previousStatus: TableStatus.OCCUPIED,
             waiterId: updatedTable.waiterId,
           });
         }).catch(err => console.error('Failed to emit table:status-changed:', err));
