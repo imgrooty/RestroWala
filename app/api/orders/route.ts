@@ -14,7 +14,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { createOrderSchema } from '@/lib/validations';
-import { OrderStatus, UserRole } from '@/types/prisma';
+import { OrderStatus, UserRole, TableStatus } from '@/types/prisma';
 // Socket.io logic removed
 
 /**
@@ -292,15 +292,22 @@ export async function POST(request: NextRequest) {
     });
 
     // Update table status to OCCUPIED if not already
-    await prisma.table.update({
+    const updatedTable = await prisma.table.update({
       where: { id: data.tableId },
       data: { status: 'OCCUPIED' },
     });
 
-    // Emit socket event for new order
-    import('@/lib/socket').then(({ emitOrderCreated }) => {
+    // Emit socket events
+    import('@/lib/socket').then(({ emitOrderCreated, emitTableStatusChanged }) => {
       emitOrderCreated({ order });
-    }).catch(err => console.error('Failed to emit order:created:', err));
+      emitTableStatusChanged({
+        tableId: updatedTable.id,
+        tableNumber: updatedTable.number,
+        status: updatedTable.status as TableStatus,
+        previousStatus: table.status as TableStatus,
+        waiterId: updatedTable.waiterId,
+      });
+    }).catch(err => console.error('Failed to emit socket events:', err));
 
     return NextResponse.json(
       {
