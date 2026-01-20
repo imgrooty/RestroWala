@@ -4,8 +4,61 @@ import "./globals.css"
 import { Providers } from "@/components/providers"
 
 export const metadata: Metadata = {
-  title: "RestroWala - Modern Restaurant OS",
-  description: "Complete restaurant management with AR/VR menu capabilities",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  title: {
+    default: "RestroWala - Modern Restaurant OS",
+    template: "%s | RestroWala"
+  },
+  description: "Complete restaurant management with AR/VR menu capabilities, real-time orders, and multi-role dashboards.",
+  keywords: ["restaurant management", "AR menu", "VR menu", "restaurant OS", "digital menu", "QR ordering"],
+  authors: [{ name: "Antigravity Team" }],
+  creator: "Antigravity Team",
+  publisher: "RestroWala",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "RestroWala",
+    title: "RestroWala - Modern Restaurant OS",
+    description: "Complete restaurant management with AR/VR menu capabilities, real-time orders, and multi-role dashboards.",
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "RestroWala - Modern Restaurant OS",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RestroWala - Modern Restaurant OS",
+    description: "Complete restaurant management with AR/VR menu capabilities, real-time orders, and multi-role dashboards.",
+    images: ["/api/og"],
+    creator: "@restrowala",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/manifest.json",
 }
 
 export default function RootLayout({
