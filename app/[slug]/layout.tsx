@@ -9,17 +9,21 @@
  */
 
 import { Metadata } from 'next';
-import { prisma } from '@/lib/prisma';
+import { getRestaurantBySlug } from '@/lib/restaurant-fetcher';
 
 export async function generateMetadata(
   { params }: { params: { slug: string } }
 ): Promise<Metadata> {
   const slug = params.slug;
 
-  const restaurant = await prisma.restaurant.findUnique({
-    where: { slug },
-    select: { name: true, description: true, logo: true }
-  });
+  // Basic slug validation
+  if (!/^[a-z0-9-]+$/.test(slug)) {
+    return {
+      title: 'Invalid Restaurant Slug',
+    };
+  }
+
+  const restaurant = await getRestaurantBySlug(slug);
 
   if (!restaurant) {
     return {

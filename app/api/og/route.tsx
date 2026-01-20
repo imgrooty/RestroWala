@@ -1,12 +1,17 @@
 import { ImageResponse } from 'next/og'
-import { prisma } from '@/lib/prisma'
+import { getRestaurantBySlug } from '@/lib/restaurant-fetcher'
+
+export const runtime = 'nodejs'
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const slug = searchParams.get('slug')
 
-    if (!slug) {
+    // Basic slug validation
+    const isValidSlug = slug && /^[a-z0-9-]+$/.test(slug)
+
+    if (!slug || !isValidSlug) {
       // Default OG Image for the platform
       return new ImageResponse(
         (
@@ -90,16 +95,8 @@ export async function GET(request: Request) {
     }
 
     // Restaurant-specific OG Image
-    // Note: Since this is edge runtime, we need to be careful with prisma if it's not edge compatible.
-    // However, for simplicity in this task, I'll assume standard Node runtime for now
-    // OR fetch via a standard fetch to an API if needed.
-    // Actually, I'll remove 'edge' runtime to be safe since Prisma is used.
-
-    // I will fetch restaurant data
-    const restaurant = await prisma.restaurant.findUnique({
-      where: { slug },
-      select: { name: true, description: true, logo: true }
-    })
+    // Fetch restaurant data from database
+    const restaurant = await getRestaurantBySlug(slug)
 
     if (!restaurant) {
        return new Response('Restaurant not found', { status: 404 })
@@ -127,7 +124,7 @@ export async function GET(request: Request) {
               textAlign: 'center',
             }}
           >
-            {restaurant.logo ? (
+            {restaurant.logo && (restaurant.logo.startsWith('http://') || restaurant.logo.startsWith('https://')) ? (
               <img
                 src={restaurant.logo}
                 alt={restaurant.name}
