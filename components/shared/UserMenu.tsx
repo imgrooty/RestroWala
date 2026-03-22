@@ -10,7 +10,6 @@
 
 'use client';
 
-import { signOut } from 'next-auth/react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { UserRole } from '@prisma/client';
+import { signOutEverywhere } from '@/lib/client-signout';
 
 const roleLabels: Record<string, string> = {
   [UserRole.ADMIN]: 'Admin',
@@ -58,8 +58,8 @@ export default function UserMenu() {
     return null;
   }
 
-  const handleSignOut = () => {
-    signOut({ callbackUrl: '/login' });
+  const handleSignOut = async () => {
+    await signOutEverywhere('/login');
   };
 
   // Get user initials for avatar

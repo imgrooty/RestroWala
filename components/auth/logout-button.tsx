@@ -1,7 +1,6 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,
@@ -9,6 +8,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { signOutEverywhere } from "@/lib/client-signout";
 
 interface LogoutButtonProps {
     variant?: "default" | "ghost" | "icon";
@@ -17,7 +17,7 @@ interface LogoutButtonProps {
 
 export function LogoutButton({ variant = "default", className }: LogoutButtonProps) {
     const handleLogout = async () => {
-        await signOut({ callbackUrl: "/login" });
+        await signOutEverywhere("/login");
     };
 
     if (variant === "icon") {

@@ -47,7 +47,8 @@ export const authOptions: NextAuthOptions = {
             image: true,
             isActive: true,
             emailVerified: true,
-            restaurantId: true
+            restaurantId: true,
+            updatedAt: true
           }
         });
 
@@ -79,7 +80,8 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           image: user.image,
           emailVerified: user.emailVerified,
-          restaurantId: user.restaurantId
+          restaurantId: user.restaurantId,
+          updatedAt: user.updatedAt
         };
       }
     }),
@@ -108,6 +110,7 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.picture = user.image;
         token.restaurantId = (user as any).restaurantId;
+        token.lastUserUpdate = (user as any)?.updatedAt?.toISOString?.() ?? new Date().toISOString();
       }
 
       // Handle session updates
@@ -120,7 +123,7 @@ export const authOptions: NextAuthOptions = {
       if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { isActive: true, role: true, restaurantId: true }
+          select: { isActive: true, role: true, restaurantId: true, updatedAt: true }
         });
 
         if (!dbUser || !dbUser.isActive) {
@@ -128,8 +131,20 @@ export const authOptions: NextAuthOptions = {
           return {} as any;
         }
 
+        const lastUserUpdate = token.lastUserUpdate
+          ? new Date(token.lastUserUpdate)
+          : token.iat
+          ? new Date(token.iat * 1000)
+          : null;
+
+        if (lastUserUpdate && lastUserUpdate < dbUser.updatedAt) {
+          return {} as any;
+        }
+
         // Update role if changed in database
         token.role = dbUser.role;
+        token.restaurantId = dbUser.restaurantId;
+        token.lastUserUpdate = dbUser.updatedAt.toISOString();
       }
 
       return token;
