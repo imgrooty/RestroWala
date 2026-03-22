@@ -15,6 +15,8 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { UserRole } from "@/types/prisma";
+import { AdapterUser } from "next-auth/adapters";
+import { JWT } from "next-auth/jwt";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -102,15 +104,25 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     // JWT callback - runs whenever a JWT is created or updated
     async jwt({ token, user, trigger, session }) {
+      const revokeToken = (currentToken: JWT) => ({ ...currentToken, revoked: true } as JWT);
+
       // Initial sign in
       if (user) {
-        token.id = user.id;
-        token.role = user.role as UserRole;
-        token.email = user.email;
-        token.name = user.name;
-        token.picture = user.image;
-        token.restaurantId = (user as any).restaurantId;
-        token.lastUserUpdate = (user as any)?.updatedAt?.toISOString?.() ?? new Date().toISOString();
+        const tokenUser = user as AdapterUser & {
+          role?: UserRole;
+          restaurantId?: string | null;
+          updatedAt?: Date;
+          image?: string | null;
+          name?: string | null;
+        };
+
+        token.id = tokenUser.id;
+        token.role = tokenUser.role as UserRole;
+        token.email = tokenUser.email;
+        token.name = tokenUser.name;
+        token.picture = tokenUser.image;
+        token.restaurantId = tokenUser.restaurantId;
+        token.lastUserUpdate = tokenUser.updatedAt?.toISOString() ?? new Date().toISOString();
       }
 
       // Handle session updates
@@ -128,17 +140,19 @@ export const authOptions: NextAuthOptions = {
 
         if (!dbUser || !dbUser.isActive) {
           // User doesn't exist or is inactive, invalidate token
-          return {} as any;
+          return revokeToken(token);
         }
 
+        // For legacy tokens that predate `lastUserUpdate`, fall back to issued-at
+        // so that a user record update still invalidates those tokens.
         const lastUserUpdate = token.lastUserUpdate
           ? new Date(token.lastUserUpdate)
           : token.iat
           ? new Date(token.iat * 1000)
-          : null;
+          : undefined;
 
         if (lastUserUpdate && lastUserUpdate < dbUser.updatedAt) {
-          return {} as any;
+          return revokeToken(token);
         }
 
         // Update role if changed in database
@@ -152,6 +166,12 @@ export const authOptions: NextAuthOptions = {
 
     // Session callback - runs whenever session is checked
     async session({ session, token }) {
+      if (token.revoked) {
+        // Returning null signals NextAuth to terminate the session on the client.
+        // See https://next-auth.js.org/configuration/callbacks#session-callback
+        return null;
+      }
+
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as UserRole;
@@ -164,7 +184,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     // Sign in callback - control who can sign in
-    async signIn({ account }: any) {
+    async signIn({ account }: { account?: { provider?: string } }) {
       // Only allow credentials-based login for staff
       if (account?.provider !== "credentials") {
         return false;

@@ -29,7 +29,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useSession } from 'next-auth/react';
-import { signOutEverywhere } from '@/lib/client-signout';
+import { signOutAllSessions } from '@/lib/client-signout';
 
 const NAV_ITEMS = [
   { label: 'Intelligence', icon: LayoutDashboard, href: '/manager/dashboard' },
@@ -108,7 +108,7 @@ export default function ManagerLayout({
                 variant="ghost"
                 size="icon"
                 className="rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"
-                onClick={() => signOutEverywhere()}
+                onClick={() => signOutAllSessions()}
               >
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -173,7 +173,7 @@ export default function ManagerLayout({
                 <DropdownMenuSeparator className="my-1 mx-2" />
                 <DropdownMenuItem
                   className="rounded-xl font-bold py-2 text-rose-500 focus:bg-rose-50 focus:text-rose-600"
-                  onClick={() => signOutEverywhere()}
+                  onClick={() => signOutAllSessions()}
                 >
                   Terminate Session
                 </DropdownMenuItem>

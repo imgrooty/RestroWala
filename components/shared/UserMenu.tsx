@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { UserRole } from '@prisma/client';
-import { signOutEverywhere } from '@/lib/client-signout';
+import { signOutAllSessions } from '@/lib/client-signout';
 
 const roleLabels: Record<string, string> = {
   [UserRole.ADMIN]: 'Admin',
@@ -59,7 +59,7 @@ export default function UserMenu() {
   }
 
   const handleSignOut = async () => {
-    await signOutEverywhere('/login');
+    await signOutAllSessions('/login');
   };
 
   // Get user initials for avatar

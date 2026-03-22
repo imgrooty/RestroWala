@@ -8,7 +8,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { signOutEverywhere } from "@/lib/client-signout";
+import { signOutAllSessions } from "@/lib/client-signout";
 
 interface LogoutButtonProps {
     variant?: "default" | "ghost" | "icon";
@@ -17,7 +17,7 @@ interface LogoutButtonProps {
 
 export function LogoutButton({ variant = "default", className }: LogoutButtonProps) {
     const handleLogout = async () => {
-        await signOutEverywhere("/login");
+        await signOutAllSessions("/login");
     };
 
     if (variant === "icon") {

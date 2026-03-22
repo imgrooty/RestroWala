@@ -14,16 +14,16 @@ export async function POST() {
     const userId = session.user.id;
 
     await prisma.$transaction([
-      prisma.session.deleteMany({ where: { userId } }),
       prisma.user.update({
         where: { id: userId },
         data: { updatedAt: new Date() },
       }),
+      prisma.session.deleteMany({ where: { userId } }),
     ]);
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Failed to revoke sessions", error);
-    return NextResponse.json({ error: "Failed to stop sessions" }, { status: 500 });
+    console.error("Failed to stop all sessions", error);
+    return NextResponse.json({ error: "Failed to stop all sessions" }, { status: 500 });
   }
 }

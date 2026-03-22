@@ -23,5 +23,6 @@ declare module "next-auth/jwt" {
     role: UserRole;
     restaurantId?: string | null;
     lastUserUpdate?: string;
+    revoked?: boolean;
   }
 }
