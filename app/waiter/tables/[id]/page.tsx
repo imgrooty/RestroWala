@@ -9,10 +9,11 @@
  * - Table status management
  */
 
-export default function TableDetailPage({ params }: { params: { id: string } }) {
+export default async function TableDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   return (
     <div>
-      <h1>Table Details: {params.id}</h1>
+      <h1>Table Details: {id}</h1>
     </div>
   );
 }

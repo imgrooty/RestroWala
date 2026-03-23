@@ -27,8 +27,9 @@ const updateStatusSchema = z.object({
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -54,7 +55,7 @@ export async function PATCH(
 
     // Get current order
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         table: {
           select: {
@@ -115,7 +116,7 @@ export async function PATCH(
 
     // Update order
     const updatedOrder = await prisma.order.update({
-      where: { id: params.id },
+      where: { id: id },
       data: updateData,
       include: {
         items: {

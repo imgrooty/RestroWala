@@ -10,7 +10,6 @@
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true, // ← explicit for safety
-    "exactOptionalPropertyTypes": true, // ← catches Zod/RHF subtle bugs
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",

@@ -20,8 +20,9 @@ import QRCode from 'qrcode';
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -42,7 +43,7 @@ export async function POST(
 
     // Check if table exists
     const existingTable = await prisma.table.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!existingTable) {
@@ -57,7 +58,7 @@ export async function POST(
 
     // Update table with new QR code
     const table = await prisma.table.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         qrCode: newQrCode,
       },
@@ -94,8 +95,9 @@ export async function POST(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     // Get format from query params
     const { searchParams } = new URL(request.url);
@@ -103,7 +105,7 @@ export async function GET(
 
     // Get table
     const table = await prisma.table.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       select: {
         id: true,
         number: true,

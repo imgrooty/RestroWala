@@ -9,11 +9,12 @@
  * - Add to cart with quantity
  */
 
-export default function MenuItemPage({ params }: { params: { tableId: string; id: string } }) {
+export default async function MenuItemPage({ params }: { params: Promise<{ tableId: string; id: string }> }) {
+  const { tableId, id } = await params;
   return (
     <div>
-      <h1>Menu Item Detail: {params.id}</h1>
-      <p>Table: {params.tableId}</p>
+      <h1>Menu Item Detail: {id}</h1>
+      <p>Table: {tableId}</p>
     </div>
   );
 }

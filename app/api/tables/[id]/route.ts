@@ -28,8 +28,9 @@ const updateTableSchema = z.object({
  */
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -41,7 +42,7 @@ export async function GET(
     }
 
     const table = await prisma.table.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         waiter: {
           select: {
@@ -114,8 +115,9 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -162,7 +164,7 @@ export async function PATCH(
 
     // Check if table exists
     const existingTable = await prisma.table.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!existingTable) {
@@ -193,7 +195,7 @@ export async function PATCH(
         where: {
           number: data.number,
           restaurantId: existingTable.restaurantId,
-          id: { not: params.id },
+          id: { not: id },
         },
       });
 
@@ -219,7 +221,7 @@ export async function PATCH(
     if (data.status !== undefined) updateData.status = data.status;
 
     const table = await prisma.table.update({
-      where: { id: params.id },
+      where: { id: id },
       data: updateData,
       include: {
         waiter: {
@@ -264,8 +266,9 @@ export async function PATCH(
  */
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -286,7 +289,7 @@ export async function DELETE(
 
     // Check if table exists
     const table = await prisma.table.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!table) {
@@ -314,7 +317,7 @@ export async function DELETE(
     // Check if table has active orders
     const activeOrders = await prisma.order.count({
       where: {
-        tableId: params.id,
+        tableId: id,
         status: {
           notIn: ['COMPLETED', 'CANCELLED'],
         },
@@ -330,7 +333,7 @@ export async function DELETE(
 
     // Delete table
     await prisma.table.delete({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     return NextResponse.json({

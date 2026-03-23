@@ -33,8 +33,8 @@ export default function CashierDashboardPage() {
             const res = await fetch('/api/tables');
             const data = await res.json();
             setTables(data.tables || []);
-        } catch (error) {
-            console.error("Error fetching tables:", error);
+        } catch (_error) {
+            console.error("Error fetching tables:", _error);
         } finally {
             setLoadingTables(false);
         }
@@ -67,7 +67,7 @@ export default function CashierDashboardPage() {
 
             refetchOrders();
             fetchTables();
-        } catch (error) {
+        } catch (_error) {
             toast({
                 title: "Error",
                 description: "Something went wrong. Please try again.",
@@ -88,7 +88,7 @@ export default function CashierDashboardPage() {
                 toast({ title: "Table Available", description: "Table is now ready for new customers." });
                 fetchTables();
             }
-        } catch (error) {
+        } catch (_error) {
             toast({ title: "Error", description: "Could not update table.", variant: "destructive" });
         }
     };

@@ -27,7 +27,7 @@ interface ARMenuViewerProps {
 
 export default function ARMenuViewer({
   modelUrl,
-  _modelFormat = 'glb',
+  modelFormat: _modelFormat = 'glb',
   itemName,
   fallbackImage,
   isOpen,

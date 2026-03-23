@@ -9,10 +9,11 @@
  * - Timer display
  */
 
-export default function KitchenOrderDetailPage({ params }: { params: { id: string } }) {
+export default async function KitchenOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   return (
     <div>
-      <h1>Order Details: {params.id}</h1>
+      <h1>Order Details: {id}</h1>
     </div>
   );
 }

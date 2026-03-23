@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   _request: NextRequest,
-  { params: _params }: { params: { id: string } }
+  { params: _params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Implementation pending
@@ -25,7 +25,7 @@ export async function GET(
 
 export async function PUT(
   _request: NextRequest,
-  { params: _params }: { params: { id: string } }
+  { params: _params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Auth check - MANAGER role required
@@ -41,7 +41,7 @@ export async function PUT(
 
 export async function DELETE(
   _request: NextRequest,
-  { params: _params }: { params: { id: string } }
+  { params: _params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Auth check - MANAGER role required

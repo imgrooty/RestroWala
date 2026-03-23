@@ -12,9 +12,9 @@ import { Metadata } from 'next';
 import { getRestaurantBySlug } from '@/lib/restaurant-fetcher';
 
 export async function generateMetadata(
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
-  const slug = params.slug;
+  const { slug } = await params;
 
   // Basic slug validation
   if (!/^[a-z0-9-]+$/.test(slug)) {

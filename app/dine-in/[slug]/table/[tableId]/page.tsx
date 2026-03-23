@@ -63,7 +63,7 @@ export default function DineInPage() {
                 // Actually, let's fetch table details to verify valid table + get restaurant name relative to table
                 fetchTable();
             }
-        } catch (error) {
+        } catch (_error) {
             console.error('Failed to load menu');
         } finally {
             setLoading(false);
@@ -126,7 +126,7 @@ export default function DineInPage() {
             toast({ title: "Order Placed!", description: "The kitchen has received your order." });
             setCart([]);
             setIsCartOpen(false);
-        } catch (error) {
+        } catch (_error) {
             toast({ title: "Error", description: "Could not place order. Try again.", variant: "destructive" });
         } finally {
             setPlacingOrder(false);

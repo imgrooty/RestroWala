@@ -7,10 +7,11 @@
  * - Replace 3D model
  */
 
-export default function EditMenuItemPage({ params }: { params: { id: string } }) {
+export default async function EditMenuItemPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   return (
     <div>
-      <h1>Edit Menu Item: {params.id}</h1>
+      <h1>Edit Menu Item: {id}</h1>
     </div>
   );
 }
