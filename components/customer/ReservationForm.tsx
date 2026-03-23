@@ -14,7 +14,7 @@ interface ReservationFormProps {
   onSubmit: (data: any) => void;
 }
 
-export default function ReservationForm({ onSubmit }: ReservationFormProps) {
+export default function ReservationForm({ onSubmit: _onSubmit }: ReservationFormProps) {
   return (
     <form className="reservation-form">
       {/* Reservation form implementation */}

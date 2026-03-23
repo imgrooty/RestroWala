@@ -15,7 +15,7 @@ interface EmptyStateProps {
   action?: React.ReactNode;
 }
 
-export default function EmptyState({ title, description, icon, action }: EmptyStateProps) {
+export default function EmptyState({ title: _title, description: _description, icon: _icon, action: _action }: EmptyStateProps) {
   return (
     <div className="empty-state">
       {/* Empty state implementation */}

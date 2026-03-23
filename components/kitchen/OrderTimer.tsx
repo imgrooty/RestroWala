@@ -14,7 +14,7 @@ interface OrderTimerProps {
   preparationTime?: number; // in minutes
 }
 
-export default function OrderTimer({ orderCreatedAt, preparationTime }: OrderTimerProps) {
+export default function OrderTimer({ orderCreatedAt: _orderCreatedAt, preparationTime: _preparationTime }: OrderTimerProps) {
   return (
     <div className="order-timer">
       {/* Timer implementation */}

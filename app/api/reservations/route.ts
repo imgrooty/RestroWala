@@ -7,12 +7,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Role-based filtering
     // Implementation pending
     return NextResponse.json({ data: [] });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to fetch reservations' },
       { status: 500 }
@@ -20,14 +20,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // Create reservation
     // Generate reservation code
     // Send confirmation email
     // Implementation pending
     return NextResponse.json({ message: 'Create reservation' });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to create reservation' },
       { status: 500 }

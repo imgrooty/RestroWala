@@ -15,7 +15,7 @@ interface TableLayoutProps {
   onTableClick: (tableId: string) => void;
 }
 
-export default function TableLayout({ tables, onTableClick }: TableLayoutProps) {
+export default function TableLayout({ tables: _tables, onTableClick: _onTableClick }: TableLayoutProps) {
   return (
     <div className="table-layout">
       {/* Table layout implementation */}

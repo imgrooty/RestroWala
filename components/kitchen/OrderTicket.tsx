@@ -17,7 +17,7 @@ interface OrderTicketProps {
   onMarkReady: (orderId: string) => void;
 }
 
-export default function OrderTicket({ order, onComplete, onMarkReady }: OrderTicketProps) {
+export default function OrderTicket({ order: _order, onComplete: _onComplete, onMarkReady: _onMarkReady }: OrderTicketProps) {
   return (
     <div className="order-ticket">
       {/* Order ticket implementation */}

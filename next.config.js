@@ -2,8 +2,10 @@ const isDev = process.env.NODE_ENV === 'development';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverActions: {
-    bodySizeLimit: '15mb',
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '15mb',
+    },
   },
 
   images: {

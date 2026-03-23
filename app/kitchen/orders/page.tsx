@@ -22,18 +22,18 @@ import { useOrders } from '@/hooks/useOrders';
 import { useSocket } from '@/hooks/useSocket';
 import { useToast } from '@/components/ui/use-toast';
 import { OrderWithRelations } from '@/types/order';
-import { OrderStatus, UserRole as _UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import {
   isOrderUrgent,
 } from '@/lib/orderStateMachine';
 import { apiClient } from '@/lib/api-client';
 
 export default function KitchenOrdersPage() {
-  const { data: _session } = useSession();
+  useSession();
   const router = useRouter();
   const { toast } = useToast();
   const [orders, setOrders] = useState<OrderWithRelations[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Initialize audio for notifications

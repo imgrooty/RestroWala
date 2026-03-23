@@ -15,7 +15,7 @@ interface OrdersListProps {
   onStatusChange: (orderId: string, status: string) => void;
 }
 
-export default function OrdersList({ orders, onStatusChange }: OrdersListProps) {
+export default function OrdersList({ orders: _orders, onStatusChange: _onStatusChange }: OrdersListProps) {
   return (
     <div className="orders-list">
       {/* Orders list implementation */}

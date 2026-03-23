@@ -8,13 +8,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params: _params }: { params: { id: string } }
 ) {
   try {
     // Implementation pending
     return NextResponse.json({ message: 'Update table status' });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to update table status' },
       { status: 500 }

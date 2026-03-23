@@ -2,7 +2,7 @@
 
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stage, useGLTF, Environment, ContactShadows } from '@react-three/drei';
+import { OrbitControls, Stage, useGLTF } from '@react-three/drei';
 
 interface ModelProps {
     url: string;

@@ -52,7 +52,7 @@ function ResetPasswordForm() {
       });
 
       setIsValidToken(response.ok);
-    } catch (error) {
+    } catch (_error) {
       setIsValidToken(false);
     }
   };
@@ -131,7 +131,7 @@ function ResetPasswordForm() {
           description: data.error || 'Failed to reset password',
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: 'destructive',
         title: 'Error',

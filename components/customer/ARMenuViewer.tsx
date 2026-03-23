@@ -11,7 +11,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Maximize2, Minimize2, Loader2 } from 'lucide-react';
+import { Maximize2, Minimize2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +27,7 @@ interface ARMenuViewerProps {
 
 export default function ARMenuViewer({
   modelUrl,
-  modelFormat = 'glb',
+  _modelFormat = 'glb',
   itemName,
   fallbackImage,
   isOpen,

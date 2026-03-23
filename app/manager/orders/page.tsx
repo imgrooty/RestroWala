@@ -10,7 +10,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 export default function ManagerOrdersPage() {
   const [orders, setOrders] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
   const { toast } = useToast();

@@ -17,7 +17,7 @@ interface CartItemProps {
   onRemove: (itemId: string) => void;
 }
 
-export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
+export default function CartItem({ item: _item, onUpdateQuantity: _onUpdateQuantity, onRemove: _onRemove }: CartItemProps) {
   return (
     <div className="cart-item">
       {/* Cart item implementation */}

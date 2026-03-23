@@ -15,7 +15,7 @@ interface TableCardProps {
   onViewTable: (tableId: string) => void;
 }
 
-export default function TableCard({ table, onViewTable }: TableCardProps) {
+export default function TableCard({ table: _table, onViewTable: _onViewTable }: TableCardProps) {
   return (
     <div className="table-card">
       {/* Table card implementation */}

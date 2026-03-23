@@ -11,6 +11,7 @@
 'use client';
 
 import { signOut } from 'next-auth/react';
+import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import {
@@ -107,11 +108,11 @@ export default function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <a href="/customer/profile">Profile Settings</a>
+          <Link href="/customer/profile">Profile Settings</Link>
         </DropdownMenuItem>
         {(user.role === UserRole.MANAGER || user.role === UserRole.ADMIN) && (
           <DropdownMenuItem asChild>
-            <a href="/manager/dashboard">Manager Dashboard</a>
+            <Link href="/manager/dashboard">Manager Dashboard</Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />

@@ -16,7 +16,7 @@ interface OrderKanbanBoardProps {
   onStatusChange: (orderId: string, status: string) => void;
 }
 
-export default function OrderKanbanBoard({ orders, onStatusChange }: OrderKanbanBoardProps) {
+export default function OrderKanbanBoard({ orders: _orders, onStatusChange: _onStatusChange }: OrderKanbanBoardProps) {
   return (
     <div className="order-kanban-board">
       {/* Kanban board implementation */}

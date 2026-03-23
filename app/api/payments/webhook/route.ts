@@ -9,13 +9,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // Verify webhook signature
     // Update payment status
     // Implementation pending
     return NextResponse.json({ received: true });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }

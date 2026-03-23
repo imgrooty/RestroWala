@@ -15,7 +15,7 @@ interface QuickOrderFormProps {
   onSubmit: (data: any) => void;
 }
 
-export default function QuickOrderForm({ tableId, onSubmit }: QuickOrderFormProps) {
+export default function QuickOrderForm({ tableId: _tableId, onSubmit: _onSubmit }: QuickOrderFormProps) {
   return (
     <form className="quick-order-form">
       {/* Quick order form implementation */}

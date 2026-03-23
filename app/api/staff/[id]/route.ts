@@ -9,13 +9,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params: _params }: { params: { id: string } }
 ) {
   try {
     // Implementation pending
     return NextResponse.json({ data: null });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to fetch staff member' },
       { status: 500 }
@@ -24,14 +24,14 @@ export async function GET(
 }
 
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params: _params }: { params: { id: string } }
 ) {
   try {
     // Auth check - MANAGER role required
     // Implementation pending
     return NextResponse.json({ message: 'Update staff member' });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to update staff member' },
       { status: 500 }
@@ -40,14 +40,14 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params: _params }: { params: { id: string } }
 ) {
   try {
     // Auth check - MANAGER role required
     // Implementation pending
     return NextResponse.json({ message: 'Delete staff member' });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to delete staff member' },
       { status: 500 }

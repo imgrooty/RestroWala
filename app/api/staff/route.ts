@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    const { password: _, ...userWithoutPassword } = newUser;
+    const { password: _password, ...userWithoutPassword } = newUser;
     return NextResponse.json({ message: 'Staff member created', data: userWithoutPassword }, { status: 201 });
   } catch (error) {
     console.error('Error creating staff member:', error);

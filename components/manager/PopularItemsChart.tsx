@@ -21,7 +21,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import { Download, TrendingUp } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PopularItem } from '@/types/analytics';
 import Image from 'next/image';
@@ -140,7 +140,7 @@ export default function PopularItemsChart({
             tick={{ fontSize: 12 }}
           />
           <Tooltip
-            formatter={(value: number, name: string, props: any) => {
+            formatter={(value: number, name: string, _props: any) => {
               if (name === 'revenue') return formatCurrency(value);
               if (name === 'orders') return `${value} orders`;
               return value;

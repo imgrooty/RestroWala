@@ -18,7 +18,7 @@ interface MenuItemFormProps {
   isEditing?: boolean;
 }
 
-export default function MenuItemForm({ initialData, onSubmit, isEditing }: MenuItemFormProps) {
+export default function MenuItemForm({ initialData: _initialData, onSubmit: _onSubmit, isEditing: _isEditing }: MenuItemFormProps) {
   return (
     <form className="menu-item-form">
       {/* Menu item form implementation */}

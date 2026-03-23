@@ -18,7 +18,7 @@ interface InventoryFormProps {
   isEditing?: boolean;
 }
 
-export default function InventoryForm({ initialData, onSubmit, isEditing }: InventoryFormProps) {
+export default function InventoryForm({ initialData: _initialData, onSubmit: _onSubmit, isEditing: _isEditing }: InventoryFormProps) {
   return (
     <form className="inventory-form">
       {/* Inventory form implementation */}
