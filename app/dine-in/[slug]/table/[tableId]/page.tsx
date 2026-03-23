@@ -37,8 +37,8 @@ export default function DineInPage() {
     const [placingOrder, setPlacingOrder] = useState(false);
 
     // Derived
-    const slug = params.slug as string;
-    const tableId = params.tableId as string;
+    const slug = typeof params?.slug === 'string' ? params.slug : '';
+    const tableId = typeof params?.tableId === 'string' ? params.tableId : '';
     const totalAmount = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 

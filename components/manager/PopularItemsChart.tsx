@@ -154,7 +154,7 @@ export default function PopularItemsChart({
           />
           <Legend />
           <Bar dataKey={sortBy === 'orders' ? 'orders' : 'revenue'} name={sortBy === 'orders' ? 'Orders' : 'Revenue'}>
-            {chartData.map((entry, index) => (
+            {chartData.map((_entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Bar>

@@ -52,7 +52,7 @@ export default function RegisterRestaurantPage() {
             toast({
                 title: "Registration Error",
                 description: err instanceof Error ? err.message : "Something went wrong",
-                variant: "destructive cursor-default",
+                variant: "destructive",
             });
         } finally {
             setIsLoading(false);

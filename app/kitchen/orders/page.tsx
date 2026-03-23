@@ -33,7 +33,6 @@ export default function KitchenOrdersPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [orders, setOrders] = useState<OrderWithRelations[]>([]);
-  const [isLoading] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Initialize audio for notifications
@@ -143,7 +142,7 @@ export default function KitchenOrdersPage() {
         </div>
       </div>
 
-      {isLoading ? (
+      {ordersLoading ? (
         <div className="flex flex-col items-center justify-center py-40 gap-6">
           <div className="h-24 w-24 border-8 border-slate-800 border-t-primary rounded-full animate-spin" />
           <p className="text-slate-500 font-black text-xl uppercase tracking-[0.4em]">Linking Feed...</p>

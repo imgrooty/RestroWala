@@ -19,7 +19,7 @@ import QRCode from 'qrcode';
  * Regenerate QR code for table
  */
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
@@ -134,7 +134,7 @@ export async function GET(
         errorCorrectionLevel: 'H',
       });
 
-      return new NextResponse(qrBuffer, {
+      return new NextResponse(new Uint8Array(qrBuffer), {
         headers: {
           'Content-Type': 'image/png',
           'Content-Disposition': `inline; filename="table-${table.number}-qr.png"`,

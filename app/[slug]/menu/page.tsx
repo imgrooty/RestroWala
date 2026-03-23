@@ -16,7 +16,7 @@ import { useParams } from 'next/navigation';
 
 export default function MenuPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = typeof params?.slug === 'string' ? params.slug : '';
 
   const [menuItems, setMenuItems] = useState<MenuItemWithRelations[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);

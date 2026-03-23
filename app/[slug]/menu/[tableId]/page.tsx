@@ -39,7 +39,7 @@ interface MenuResponse {
 
 export default function MenuPage() {
   const params = useParams();
-  const tableId = params.tableId as string;
+  const tableId = typeof params?.tableId === 'string' ? params.tableId : '';
   
   const { addItem } = useCart();
   const [menuItems, setMenuItems] = useState<MenuItemWithRelations[]>([]);

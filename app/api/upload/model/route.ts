@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
         const buffer = Buffer.from(bytes);
 
         // Optimize GLB if applicable
-        let finalBuffer = buffer;
+        let finalBuffer: Buffer<ArrayBufferLike> = buffer;
         let metadata = {
             fileSize: buffer.length,
             vertices: 0,

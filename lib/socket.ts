@@ -8,15 +8,17 @@ declare global {
     let io: IOServer | undefined;
 }
 
+const globalForIO = globalThis as typeof globalThis & { io?: IOServer };
+
 export const isIOInitialized = () => {
-    return !!global.io;
+    return !!globalForIO.io;
 };
 
 export const getIO = () => {
-    if (!global.io) {
+    if (!globalForIO.io) {
         throw new Error('Socket.io not initialized. Call initIO first.');
     }
-    return global.io;
+    return globalForIO.io;
 };
 
 /**
@@ -24,9 +26,9 @@ export const getIO = () => {
  * Note: In Next.js App Router, this usually needs a workaround to get the HTTP server instance.
  */
 export const initIO = (server: NetServer) => {
-    if (global.io) {
+    if (globalForIO.io) {
         console.log('Socket.io already initialized');
-        return global.io;
+        return globalForIO.io;
     }
 
     console.log('Initializing Socket.io server...');
@@ -47,7 +49,7 @@ export const initIO = (server: NetServer) => {
         });
     });
 
-    global.io = io;
+    globalForIO.io = io;
     return io;
 };
 
@@ -67,11 +69,11 @@ export const emitOrderStatusChanged = (data: {
         role: string;
     };
 }) => {
-    if (!global.io) {
+    if (!globalForIO.io) {
         console.warn('Cannot emit order status change: Socket.io not initialized');
         return;
     }
-    global.io.emit('order:status-changed', data);
+    globalForIO.io.emit('order:status-changed', data);
 };
 
 export const emitTableStatusChanged = (data: {
@@ -81,17 +83,17 @@ export const emitTableStatusChanged = (data: {
     previousStatus: string;
     waiterId: string | null;
 }) => {
-    if (!global.io) {
+    if (!globalForIO.io) {
         console.warn('Cannot emit table status change: Socket.io not initialized');
         return;
     }
-    global.io.emit('table:status-changed', data);
+    globalForIO.io.emit('table:status-changed', data);
 };
 
 export const emitOrderCreated = (data: { order: any }) => {
-    if (!global.io) {
+    if (!globalForIO.io) {
         console.warn('Cannot emit order creation: Socket.io not initialized');
         return;
     }
-    global.io.emit('order:created', data);
+    globalForIO.io.emit('order:created', data);
 };
