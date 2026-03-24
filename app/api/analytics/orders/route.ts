@@ -91,16 +91,16 @@ export async function GET(request: NextRequest) {
     });
 
     // Order counts by status
-    const ordersByStatus = Object.values(OrderStatus).reduce((acc: any, status) => {
-      acc[status] = orders.filter((o: any) => o.status === status).length;
+    const ordersByStatus = Object.values(OrderStatus).reduce<Record<OrderStatus, number>>((acc, status) => {
+      acc[status] = orders.filter((o) => o.status === status).length;
       return acc;
     }, {} as Record<OrderStatus, number>);
 
     // Calculate metrics
     const completedOrders = orders.filter(
-      (o: any) => o.status === OrderStatus.COMPLETED || o.status === OrderStatus.SERVED
+      (o) => o.status === OrderStatus.COMPLETED || o.status === OrderStatus.SERVED
     );
-    const totalRevenue = completedOrders.reduce((sum: number, o: any) => sum + o.finalAmount, 0);
+    const totalRevenue = completedOrders.reduce((sum: number, o) => sum + o.finalAmount, 0);
     const totalOrders = orders.length;
     const averageOrderValue = completedOrders.length > 0
       ? totalRevenue / completedOrders.length
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
 
     // Peak hours analysis
     const hourlyData = Array.from({ length: 24 }, (_, hour) => {
-      const hourOrders = orders.filter((order: any) => {
+      const hourOrders = orders.filter((order) => {
         const orderHour = new Date(order.createdAt).getHours();
         return orderHour === hour;
       });
@@ -117,13 +117,14 @@ export async function GET(request: NextRequest) {
         hourLabel: `${hour}:00`,
         orders: hourOrders.length,
         revenue: hourOrders
-          .filter((o: any) => o.status === OrderStatus.COMPLETED || o.status === OrderStatus.SERVED)
-          .reduce((sum: number, o: any) => sum + o.finalAmount, 0),
+          .filter((o) => o.status === OrderStatus.COMPLETED || o.status === OrderStatus.SERVED)
+          .reduce((sum: number, o) => sum + o.finalAmount, 0),
       };
     });
 
-    const peakHour = hourlyData.reduce((max: any, current: any) =>
-      current.orders > max.orders ? current : max
+    const peakHour = hourlyData.reduce(
+      (max, current) => (current.orders > max.orders ? current : max),
+      hourlyData[0] ?? { hour: 0, hourLabel: '0:00', orders: 0, revenue: 0 }
     );
 
     // Table turnover rate
@@ -165,9 +166,9 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const waiterPerformance = waiterStats.map((waiter: any) => {
-      const waiterOrders = waiter.assignedTables.flatMap((table: any) => table.orders);
-      const waiterRevenue = waiterOrders.reduce((sum: number, o: any) => sum + o.finalAmount, 0);
+    const waiterPerformance = waiterStats.map((waiter) => {
+      const waiterOrders = waiter.assignedTables.flatMap((table) => table.orders);
+      const waiterRevenue = waiterOrders.reduce((sum: number, o) => sum + o.finalAmount, 0);
       const tablesAssigned = waiter.assignedTables.length;
 
       return {
@@ -183,12 +184,12 @@ export async function GET(request: NextRequest) {
           ? waiterOrders.length / tablesAssigned
           : 0,
       };
-    }).sort((a: any, b: any) => b.revenue - a.revenue);
+    }).sort((a, b) => b.revenue - a.revenue);
 
     // Order status timeline (last 7 days)
     const last7Days = Array.from({ length: 7 }, (_, i: number) => {
       const date = subDays(endDate, 6 - i);
-      const dayOrders = orders.filter((order: any) => {
+      const dayOrders = orders.filter((order) => {
         const orderDate = format(new Date(order.createdAt), 'yyyy-MM-dd');
         return orderDate === format(date, 'yyyy-MM-dd');
       });
@@ -196,8 +197,8 @@ export async function GET(request: NextRequest) {
         date: format(date, 'MMM dd'),
         dateValue: format(date, 'yyyy-MM-dd'),
         total: dayOrders.length,
-        completed: dayOrders.filter((o: any) => o.status === OrderStatus.COMPLETED).length,
-        cancelled: dayOrders.filter((o: any) => o.status === OrderStatus.CANCELLED).length,
+        completed: dayOrders.filter((o) => o.status === OrderStatus.COMPLETED).length,
+        cancelled: dayOrders.filter((o) => o.status === OrderStatus.CANCELLED).length,
       };
     });
 

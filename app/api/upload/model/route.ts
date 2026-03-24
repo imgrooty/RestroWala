@@ -4,17 +4,10 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { optimizeModel } from '@/lib/modelOptimizer';
 
-import { z } from 'zod';
-
 export const dynamic = 'force-dynamic';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_EXTENSIONS = ['.glb', '.gltf'];
-
-// Prefixed with _ to silence unused warning if needed, or just keep for validation logic
-const _uploadSchema = z.object({
-    file: z.any().refine((file) => file?.size <= MAX_FILE_SIZE, 'File size must be less than 10MB'),
-});
 
 export async function POST(req: NextRequest) {
     try {
@@ -36,10 +29,10 @@ export async function POST(req: NextRequest) {
         }
 
         const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
+        const buffer = Buffer.from(new Uint8Array(bytes));
 
         // Optimize GLB if applicable
-        let finalBuffer = buffer;
+        let finalBuffer: Buffer = buffer;
         let metadata = {
             fileSize: buffer.length,
             vertices: 0,
@@ -60,7 +53,7 @@ export async function POST(req: NextRequest) {
         // Ensure directory exists
         try {
             await mkdir(uploadDir, { recursive: true });
-        } catch (err) {
+        } catch {
             // Ignore if directory exists
         }
 

@@ -2,7 +2,7 @@
 
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stage, useGLTF, Environment, ContactShadows } from '@react-three/drei';
+import { OrbitControls, Stage, useGLTF } from '@react-three/drei';
 
 interface ModelProps {
     url: string;
@@ -31,7 +31,7 @@ const ModelPreview: React.FC<ModelPreviewProps> = ({ url, className = "w-full h-
         <div className={`${className} bg-slate-900 rounded-xl overflow-hidden relative group shadow-2xl transition-all duration-300 hover:shadow-purple-500/20`}>
             <Canvas shadows camera={{ position: [0, 0, 4], fov: 45 }}>
                 <Suspense fallback={null}>
-                    <Stage environment="city" intensity={0.6} contactShadows={{ opacity: 0.4, blur: 2 }}>
+                    <Stage environment="city" intensity={0.6}>
                         <Model url={url} />
                     </Stage>
                     <OrbitControls autoRotate autoRotateSpeed={0.5} enablePan={false} minDistance={2} maxDistance={10} />

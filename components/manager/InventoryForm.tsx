@@ -13,12 +13,12 @@
 'use client';
 
 interface InventoryFormProps {
-  initialData?: any; // TODO: Replace with proper Inventory type
-  onSubmit: (data: any) => void;
+  initialData?: unknown; // TODO: Replace with proper Inventory type
+  onSubmit: (data: unknown) => void;
   isEditing?: boolean;
 }
 
-export default function InventoryForm({ initialData, onSubmit, isEditing }: InventoryFormProps) {
+export default function InventoryForm(_props: InventoryFormProps) {
   return (
     <form className="inventory-form">
       {/* Inventory form implementation */}

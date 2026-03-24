@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 
 /**
  * Interface for model metadata
@@ -28,7 +26,7 @@ export async function optimizeModel(buffer: Buffer): Promise<{ data: Buffer; met
         // Dynamic import to avoid build-time issues with Cesium/index.cjs
         const { processGlb } = await import('gltf-pipeline');
         const results = await processGlb(buffer, options);
-        const optimizedBuffer = results.glb;
+        const optimizedBuffer = Buffer.from(results.glb);
 
         // Estimate metadata (this is a simplified estimation as gltf-pipeline 
         // doesn't return vertex count directly easily without parsing)

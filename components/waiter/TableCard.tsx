@@ -11,11 +11,11 @@
 'use client';
 
 interface TableCardProps {
-  table: any; // TODO: Replace with proper Table type
+  table: unknown; // TODO: Replace with proper Table type
   onViewTable: (tableId: string) => void;
 }
 
-export default function TableCard({ table, onViewTable }: TableCardProps) {
+export default function TableCard(_props: TableCardProps) {
   return (
     <div className="table-card">
       {/* Table card implementation */}

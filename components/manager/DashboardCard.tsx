@@ -25,7 +25,7 @@ export default function DashboardCard({
   title,
   value,
   icon,
-  trend,
+  trend: _trend,
   trendLabel,
   className,
 }: DashboardCardProps) {

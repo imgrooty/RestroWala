@@ -9,7 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // Auth check
     // Validate file type and size
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     // Return URL
     // Implementation pending
     return NextResponse.json({ url: '' });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'File upload failed' },
       { status: 500 }

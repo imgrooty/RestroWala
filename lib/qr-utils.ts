@@ -94,8 +94,8 @@ export async function generateQRSvg(
  */
 export async function generateBrandedQRCode(
   url: string,
-  tableNumber: number,
-  options?: {
+  _tableNumber: number,
+  _options?: {
     floor?: string;
     location?: string;
     logoUrl?: string;

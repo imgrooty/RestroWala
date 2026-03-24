@@ -78,11 +78,21 @@ export async function POST(request: NextRequest) {
         phone,
         isActive: true,
         restaurantId: session.user.restaurantId,
-      }
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        phone: true,
+        isActive: true,
+        restaurantId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
-    const { password: _, ...userWithoutPassword } = newUser;
-    return NextResponse.json({ message: 'Staff member created', data: userWithoutPassword }, { status: 201 });
+    return NextResponse.json({ message: 'Staff member created', data: newUser }, { status: 201 });
   } catch (error) {
     console.error('Error creating staff member:', error);
     return NextResponse.json(

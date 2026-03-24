@@ -73,7 +73,7 @@ export default function MenuManagementPage() {
       setIsAdding(false);
       setNewItem({ name: '', description: '', price: '', model3dUrl: '', modelMetadata: null });
       fetchMenu();
-    } catch (error) {
+    } catch {
       toast({ title: "Error", description: "Could not save item", variant: "destructive" });
     } finally {
       setItemsSubmitting(false);

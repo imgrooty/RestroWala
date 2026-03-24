@@ -46,7 +46,7 @@ export default function TablesPage() {
             if (data.data) {
                 setTables(data.data);
             }
-        } catch (error) {
+        } catch {
             toast({ title: "Error", description: "Failed to load tables", variant: "destructive" });
         } finally {
             setLoading(false);

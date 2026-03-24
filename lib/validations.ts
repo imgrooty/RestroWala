@@ -7,7 +7,7 @@
  */
 
 import { z } from 'zod';
-import { OrderStatus, PaymentMethod, UserRole, TableStatus, ReservationStatus, InventoryUnit } from '@prisma/client';
+import { PaymentMethod, TableStatus, InventoryUnit } from '@prisma/client';
 
 // Menu Item validation
 export const menuItemSchema = z.object({

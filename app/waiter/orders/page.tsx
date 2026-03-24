@@ -74,6 +74,8 @@ export default function WaiterOrdersPage() {
 
     if (session?.user) {
       fetchOrders();
+      const interval = setInterval(fetchOrders, 15000);
+      return () => clearInterval(interval);
     }
   }, [session, statusFilter, tableFilter, toast]);
 

@@ -89,11 +89,17 @@ export default function ManagerOrdersPage() {
       </div>
 
       {/* Orders Table */}
-      <OrdersTable
-        orders={filteredOrders}
-        onViewOrder={(id) => router.push(`/manager/orders/${id}`)}
-        onUpdateStatus={handleUpdateStatus}
-      />
+      {isLoading ? (
+        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500">
+          Loading orders...
+        </div>
+      ) : (
+        <OrdersTable
+          orders={filteredOrders}
+          onViewOrder={(id) => router.push(`/manager/orders/${id}`)}
+          onUpdateStatus={handleUpdateStatus}
+        />
+      )}
     </div>
   );
 }

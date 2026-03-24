@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
       customers: Set<string>;
     }>();
 
-    orders.forEach((order: any) => {
+    orders.forEach((order) => {
       let key: string;
 
       if (period === 'day') {
@@ -206,10 +206,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate totals and comparison
-    const totalRevenue = orders.reduce((sum: number, order: any) => sum + order.finalAmount, 0);
+    const totalRevenue = orders.reduce((sum: number, order) => sum + order.finalAmount, 0);
     const totalOrders = orders.length;
     const uniqueCustomers = new Set<string>();
-    orders.forEach((order: any) => {
+    orders.forEach((order) => {
       if (order.userId) uniqueCustomers.add(order.userId);
       if (order.customerPhone) uniqueCustomers.add(order.customerPhone);
     });
@@ -236,7 +236,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const previousRevenue = previousOrders.reduce((sum: number, order: any) => sum + order.finalAmount, 0);
+    const previousRevenue = previousOrders.reduce((sum: number, order) => sum + order.finalAmount, 0);
     const previousOrdersCount = previousOrders.length;
     const revenueChange = previousRevenue > 0
       ? ((totalRevenue - previousRevenue) / previousRevenue) * 100

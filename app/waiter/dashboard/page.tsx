@@ -52,7 +52,7 @@ export default function WaiterDashboardPage() {
         setTables((prev: any[]) => prev.map((t: any) => t.id === tableId ? { ...t, status } : t));
         toast({ title: "Status Updated", description: `Table T-X is now ${status.toLowerCase()}` });
       }
-    } catch (error) {
+    } catch {
       toast({ title: "Error", description: "System sync failed", variant: "destructive" });
     }
   };

@@ -111,7 +111,7 @@ function LoginForm() {
 
         router.refresh();
       }
-    } catch (error) {
+    } catch {
       toast({
         variant: 'destructive',
         title: 'Error',

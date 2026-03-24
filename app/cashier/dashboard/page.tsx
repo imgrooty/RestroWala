@@ -67,7 +67,7 @@ export default function CashierDashboardPage() {
 
             refetchOrders();
             fetchTables();
-        } catch (error) {
+        } catch {
             toast({
                 title: "Error",
                 description: "Something went wrong. Please try again.",
@@ -88,7 +88,7 @@ export default function CashierDashboardPage() {
                 toast({ title: "Table Available", description: "Table is now ready for new customers." });
                 fetchTables();
             }
-        } catch (error) {
+        } catch {
             toast({ title: "Error", description: "Could not update table.", variant: "destructive" });
         }
     };

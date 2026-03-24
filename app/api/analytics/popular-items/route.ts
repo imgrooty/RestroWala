@@ -99,9 +99,9 @@ export async function GET(request: NextRequest) {
     });
 
     // Calculate metrics and format
-    const formattedItems = popularItems.map((menuItem: any) => {
-      const quantity = menuItem.orderItems.reduce((sum: number, orderItem: any) => sum + orderItem.quantity, 0);
-      const revenue = menuItem.orderItems.reduce((sum: number, orderItem: any) => sum + (orderItem.price * orderItem.quantity), 0);
+    const formattedItems = popularItems.map((menuItem) => {
+      const quantity = menuItem.orderItems.reduce((sum: number, orderItem) => sum + orderItem.quantity, 0);
+      const revenue = menuItem.orderItems.reduce((sum: number, orderItem) => sum + (orderItem.price * orderItem.quantity), 0);
 
       return {
         id: menuItem.id,
@@ -113,12 +113,12 @@ export async function GET(request: NextRequest) {
         price: menuItem.price,
       };
     })
-      .sort((a: any, b: any) => b.quantity - a.quantity)
+      .sort((a, b) => b.quantity - a.quantity)
       .slice(0, limit);
 
     // Summary data
-    const totalQuantity = formattedItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
-    const totalRevenue = formattedItems.reduce((sum: number, item: any) => sum + item.revenue, 0);
+    const totalQuantity = formattedItems.reduce((sum: number, item) => sum + item.quantity, 0);
+    const totalRevenue = formattedItems.reduce((sum: number, item) => sum + item.revenue, 0);
 
     return NextResponse.json({
       data: {

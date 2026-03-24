@@ -16,7 +16,7 @@ import { useParams } from 'next/navigation';
 
 export default function MenuPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = (params?.slug as string) || '';
 
   const [menuItems, setMenuItems] = useState<MenuItemWithRelations[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -57,7 +57,7 @@ export default function MenuPage() {
     };
 
     fetchData();
-  }, [toast]);
+  }, [slug, toast]);
 
   useEffect(() => {
     let result = menuItems;

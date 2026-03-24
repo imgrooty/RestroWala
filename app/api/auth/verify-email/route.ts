@@ -9,11 +9,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // Implementation pending
     return NextResponse.json({ message: 'Email verification endpoint' });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Verification failed' },
       { status: 500 }

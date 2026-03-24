@@ -11,7 +11,7 @@
 
 'use client';
 
-import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Clock } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users } from 'lucide-react';
 import DashboardCard from './DashboardCard';
 import { cn } from '@/lib/utils';
 

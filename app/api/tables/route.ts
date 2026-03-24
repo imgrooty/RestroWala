@@ -105,7 +105,8 @@ export async function POST(request: NextRequest) {
         location: data.location,
         restaurantId,
         qrCode: uuidv4(), // Unique code for the QR
-        status: data.status || 'AVAILABLE'
+        status: data.status || 'AVAILABLE',
+        waiterId: data.waiterId || null,
       }
     });
 

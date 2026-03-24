@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChefHat, ArrowRight, Building2, User, Mail, Lock, CheckCircle2, Loader2 } from 'lucide-react';
+import { ChefHat, ArrowRight, Building2, User, Mail, Lock, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -52,7 +53,7 @@ export default function RegisterRestaurantPage() {
             toast({
                 title: "Registration Error",
                 description: err instanceof Error ? err.message : "Something went wrong",
-                variant: "destructive cursor-default",
+                variant: "destructive",
             });
         } finally {
             setIsLoading(false);
@@ -196,9 +197,4 @@ export default function RegisterRestaurantPage() {
             </div>
         </div>
     );
-}
-
-// Minimal Link component since we're using inside the same file for demo
-function Link({ href, children, className }: any) {
-    return <a href={href} className={className}>{children}</a>;
 }

@@ -9,16 +9,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-  try {
-    // Verify webhook signature
-    // Update payment status
-    // Implementation pending
-    return NextResponse.json({ received: true });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Webhook processing failed' },
-      { status: 500 }
-    );
-  }
+export async function POST(_request: NextRequest) {
+  // Webhook signature verification is not yet implemented.
+  // Fail closed to prevent spoofed events from being accepted.
+  return NextResponse.json(
+    { error: 'Webhook signature verification not implemented' },
+    { status: 501 }
+  );
 }

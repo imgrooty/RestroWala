@@ -13,7 +13,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { ChefHat, Clock, CheckCircle2, Activity } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -22,14 +21,13 @@ import { useOrders } from '@/hooks/useOrders';
 import { useSocket } from '@/hooks/useSocket';
 import { useToast } from '@/components/ui/use-toast';
 import { OrderWithRelations } from '@/types/order';
-import { OrderStatus, UserRole as _UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import {
   isOrderUrgent,
 } from '@/lib/orderStateMachine';
 import { apiClient } from '@/lib/api-client';
 
 export default function KitchenOrdersPage() {
-  const { data: _session } = useSession();
   const router = useRouter();
   const { toast } = useToast();
   const [orders, setOrders] = useState<OrderWithRelations[]>([]);
@@ -65,7 +63,30 @@ export default function KitchenOrdersPage() {
   // Use allOrders and filter them
   useEffect(() => {
     if (!ordersLoading && allOrders) {
-      setOrders(allOrders.filter((o: any) => ['CONFIRMED', 'PREPARING', 'READY'].includes(o.status)) as any);
+      setOrders(
+        allOrders
+          .filter((o) =>
+            ['PENDING', 'CONFIRMED', 'PREPARING', 'READY'].includes(o.status)
+          )
+          .map((o) => {
+            const createdAt = o.createdAt instanceof Date
+              ? o.createdAt
+              : (typeof o.createdAt === 'string' || typeof o.createdAt === 'number')
+                ? new Date(o.createdAt)
+                : new Date(0);
+            const updatedAt = o.updatedAt instanceof Date
+              ? o.updatedAt
+              : (typeof o.updatedAt === 'string' || typeof o.updatedAt === 'number')
+                ? new Date(o.updatedAt)
+                : new Date(0);
+            return { ...o, createdAt, updatedAt };
+          })
+      );
+      setIsLoading(false);
+    }
+    if (!ordersLoading && !allOrders) {
+      setOrders([]);
+      setIsLoading(false);
     }
   }, [allOrders, ordersLoading]);
 
@@ -99,6 +120,7 @@ export default function KitchenOrdersPage() {
 
   // Group orders by status
   const ordersByStatus = {
+    PENDING: orders.filter((o) => o.status === 'PENDING'),
     CONFIRMED: orders.filter((o) => o.status === 'CONFIRMED'),
     PREPARING: orders.filter((o) => o.status === 'PREPARING'),
     READY: orders.filter((o) => o.status === 'READY'),
@@ -149,7 +171,39 @@ export default function KitchenOrdersPage() {
           <p className="text-slate-500 font-black text-xl uppercase tracking-[0.4em]">Linking Feed...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+          {/* Pending Column */}
+          <div className="space-y-6">
+            <div className="bg-rose-600/10 backdrop-blur-sm p-6 rounded-[2.5rem] border border-rose-500/20 shadow-2xl shadow-rose-500/5">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-black text-rose-400 flex items-center gap-3 italic uppercase tracking-tighter">
+                  <Clock className="h-7 w-7" />
+                  Incoming
+                </h2>
+                <Badge className="bg-rose-500 text-white border-none px-4 py-1.5 rounded-full font-black text-sm shadow-lg shadow-rose-500/20">
+                  {ordersByStatus.PENDING.length}
+                </Badge>
+              </div>
+              <div className="space-y-4 max-h-[calc(100vh-350px)] overflow-y-auto px-1 scrollbar-hide">
+                {sortByUrgency(ordersByStatus.PENDING).map((order) => (
+                  <div key={order.id} className="animate-in zoom-in-95 duration-500">
+                    <OrderCard
+                      order={order}
+                      userRole={UserRole.KITCHEN_STAFF}
+                      onStatusChange={handleStatusChange}
+                      onViewDetails={handleViewDetails}
+                    />
+                  </div>
+                ))}
+                {ordersByStatus.PENDING.length === 0 && (
+                  <div className="text-center py-20 border-2 border-dashed border-slate-800 rounded-[2rem]">
+                    <p className="text-slate-600 font-black text-xs uppercase tracking-widest">No New Orders</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Confirmed Column */}
           <div className="space-y-6">
             <div className="bg-indigo-600/10 backdrop-blur-sm p-6 rounded-[2.5rem] border border-indigo-500/20 shadow-2xl shadow-indigo-500/5">

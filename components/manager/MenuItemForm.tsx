@@ -13,12 +13,12 @@
 'use client';
 
 interface MenuItemFormProps {
-  initialData?: any; // TODO: Replace with proper MenuItem type
-  onSubmit: (data: any) => void;
+  initialData?: unknown; // TODO: Replace with proper MenuItem type
+  onSubmit: (data: unknown) => void;
   isEditing?: boolean;
 }
 
-export default function MenuItemForm({ initialData, onSubmit, isEditing }: MenuItemFormProps) {
+export default function MenuItemForm(_props: MenuItemFormProps) {
   return (
     <form className="menu-item-form">
       {/* Menu item form implementation */}

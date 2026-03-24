@@ -1,7 +1,7 @@
 "use client";
 
 import { LogoutButton } from "@/components/auth/logout-button";
-import { Coffee, Bell } from "lucide-react";
+import { Coffee } from "lucide-react";
 
 export default function WaiterLayout({
   children,

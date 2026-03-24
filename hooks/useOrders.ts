@@ -47,7 +47,10 @@ export function useOrders(options: UseOrdersOptions = {}) {
       const params = new URLSearchParams();
       if (filters?.status) {
         if (Array.isArray(filters.status)) {
-          filters.status.forEach(s => params.append('status', s));
+          const statuses = filters.status.filter(Boolean);
+          if (statuses.length > 0) {
+            params.append('statuses', statuses.join(','));
+          }
         } else {
           params.append('status', filters.status);
         }
@@ -64,7 +67,7 @@ export function useOrders(options: UseOrdersOptions = {}) {
       }
 
       const data = await response.json();
-      setOrders(data.orders || []);
+      setOrders(data.data || data.orders || []);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to fetch orders';
       setError(message);
@@ -96,7 +99,7 @@ export function useOrders(options: UseOrdersOptions = {}) {
         description: 'Order created successfully',
       });
 
-      return data.order;
+      return data.data || data.order;
     } catch (err) {
       toast({
         title: 'Error',
@@ -123,7 +126,7 @@ export function useOrders(options: UseOrdersOptions = {}) {
       }
 
       const data = await response.json();
-      return data.order;
+      return data.data || data.order;
     } catch (err) {
       toast({
         title: 'Error',

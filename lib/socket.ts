@@ -4,6 +4,7 @@ import { OrderStatus } from '../types/prisma';
 
 // Use a global variable to persist the IO instance across HMR in development
 declare global {
+    // eslint-disable-next-line no-var
     var io: IOServer | undefined;
 }
 

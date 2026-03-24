@@ -12,12 +12,12 @@
 'use client';
 
 interface CartItemProps {
-  item: any; // TODO: Replace with proper CartItem type
+  item: unknown; // TODO: Replace with proper CartItem type
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   onRemove: (itemId: string) => void;
 }
 
-export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
+export default function CartItem(_props: CartItemProps) {
   return (
     <div className="cart-item">
       {/* Cart item implementation */}

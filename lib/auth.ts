@@ -213,14 +213,14 @@ export function hasRole(userRole: UserRole, allowedRoles: UserRole[]): boolean {
 /**
  * Role hierarchy for authorization
  */
-export const roleHierarchy = {
+export const roleHierarchy: Record<UserRole, number> = {
   [UserRole.SUPER_ADMIN]: 6,
   [UserRole.ADMIN]: 5,
   [UserRole.MANAGER]: 4,
   [UserRole.CASHIER]: 3,
   [UserRole.KITCHEN_STAFF]: 2,
   [UserRole.WAITER]: 1,
-  [(UserRole as any).CLEANER]: 1,
+  [UserRole.CLEANER]: 1,
   [UserRole.CUSTOMER]: 0
 };
 
@@ -228,5 +228,8 @@ export const roleHierarchy = {
  * Check if user role has sufficient permissions
  */
 export function hasPermission(userRole: UserRole, requiredRole: UserRole): boolean {
-  return roleHierarchy[userRole] >= roleHierarchy[requiredRole];
+  const userLevel = roleHierarchy[userRole];
+  const requiredLevel = roleHierarchy[requiredRole];
+  if (userLevel === undefined || requiredLevel === undefined) return false;
+  return userLevel >= requiredLevel;
 }

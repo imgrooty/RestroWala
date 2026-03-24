@@ -11,6 +11,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { TableStatus } from '@/types/prisma';
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 const updateTableSchema = z.object({
@@ -206,7 +207,7 @@ export async function PATCH(
     }
 
     // Update table
-    const updateData: any = {};
+    const updateData: Prisma.TableUncheckedUpdateInput = {};
     if (isManager) {
       if (data.number !== undefined) updateData.number = data.number;
       if (data.capacity !== undefined) updateData.capacity = data.capacity;
