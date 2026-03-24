@@ -67,8 +67,13 @@ export default function CartPage() {
 
       if (!resolvedTableId) {
         // Look up table by number and slug for manual entry
-        const tableResponse = await fetch(`/api/tables/by-number?number=${tableNumber}&slug=${slug}`);
+        const params = new URLSearchParams({ number: tableNumber, slug });
+        const tableResponse = await fetch(`/api/tables/by-number?${params.toString()}`);
         const tableData = await tableResponse.json();
+
+        if (!tableResponse.ok) {
+          throw new Error(tableData.error || "Invalid table number for this restaurant");
+        }
 
         resolvedTableId = tableData.table?.id;
         if (!resolvedTableId) {

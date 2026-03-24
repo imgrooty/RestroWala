@@ -21,22 +21,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const parsedNumber = parseInt(number, 10);
-    if (Number.isNaN(parsedNumber)) {
+    // Ensure `number` is a strict positive integer string (no extra characters, spaces, or signs)
+    if (!/^\d+$/.test(number)) {
       return NextResponse.json({ error: 'Invalid table number' }, { status: 400 });
     }
 
-    const restaurant = await prisma.restaurant.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-
-    if (!restaurant) {
-      return NextResponse.json({ error: 'Restaurant not found' }, { status: 404 });
+    const parsedNumber = Number(number);
+    if (parsedNumber <= 0) {
+      return NextResponse.json({ error: 'Invalid table number' }, { status: 400 });
     }
 
+    // Single query: filter by table number and restaurant slug via relation
     const table = await prisma.table.findFirst({
-      where: { number: parsedNumber, restaurantId: restaurant.id },
+      where: {
+        number: parsedNumber,
+        restaurant: { slug },
+      },
       select: { id: true, number: true, floor: true, location: true, capacity: true },
     });
 

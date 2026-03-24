@@ -77,7 +77,6 @@ export default withAuth(
           "/menu",     // Direct menu access
           "/cart",     // Direct cart access
           "/api/tables", // Table lookup for guests
-          "/api/tables/by-number", // Public table lookup by number+slug
           "/api/orders", // Order placement for guests
           "/api/menu",   // Menu items
           "/api/categories", // Categories
