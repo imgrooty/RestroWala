@@ -26,7 +26,7 @@ const ROLE_PERMISSIONS: Record<string, OrderStatus[]> = {
   CUSTOMER: ['CANCELLED'], // Can only cancel pending orders
   WAITER: ['CONFIRMED', 'SERVED', 'CANCELLED'], // Can confirm, serve, or cancel
   CASHIER: ['SERVED', 'COMPLETED', 'CANCELLED'], // Can complete orders (payment)
-  KITCHEN_STAFF: ['PREPARING', 'READY'], // Can start preparing and mark ready
+  KITCHEN_STAFF: ['CONFIRMED', 'PREPARING', 'READY'], // Can acknowledge, start preparing, and mark ready
   MANAGER: Object.values(OrderStatus), // Can change to any status
   ADMIN: Object.values(OrderStatus), // Can change to any status
   SUPER_ADMIN: Object.values(OrderStatus), // Can change to any status
