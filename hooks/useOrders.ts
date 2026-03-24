@@ -47,7 +47,10 @@ export function useOrders(options: UseOrdersOptions = {}) {
       const params = new URLSearchParams();
       if (filters?.status) {
         if (Array.isArray(filters.status)) {
-          params.append('statuses', filters.status.join(','));
+          const statuses = filters.status.filter(Boolean);
+          if (statuses.length > 0) {
+            params.append('statuses', statuses.join(','));
+          }
         } else {
           params.append('status', filters.status);
         }

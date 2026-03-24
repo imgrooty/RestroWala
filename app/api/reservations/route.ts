@@ -12,7 +12,8 @@ export async function GET(_request: NextRequest) {
     // Role-based filtering
     // Implementation pending
     return NextResponse.json({ data: [] });
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch reservations:', error);
     return NextResponse.json(
       { error: 'Failed to fetch reservations' },
       { status: 500 }
@@ -27,7 +28,8 @@ export async function POST(_request: NextRequest) {
     // Send confirmation email
     // Implementation pending
     return NextResponse.json({ message: 'Create reservation' });
-  } catch {
+  } catch (error) {
+    console.error('Failed to create reservation:', error);
     return NextResponse.json(
       { error: 'Failed to create reservation' },
       { status: 500 }
