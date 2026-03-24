@@ -25,16 +25,17 @@ interface TableQRGeneratorProps {
     floor?: string;
     location?: string;
   };
+  slug: string;
 }
 
-export default function TableQRGenerator({ table }: TableQRGeneratorProps) {
+export default function TableQRGenerator({ table, slug }: TableQRGeneratorProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
-  // Generate QR code URL (customer menu with table ID)
-  const qrCodeUrl = `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/customer/menu?table=${table.id}`;
+  // Generate QR code URL pointing to the menu order page with table context
+  const qrCodeUrl = `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/${slug}/menu/${table.id}`;
 
   /**
    * Generate QR code

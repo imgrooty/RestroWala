@@ -191,7 +191,7 @@ export default function TablesPage() {
                                     <div className="bg-white rounded-xl p-4 border border-slate-100 flex items-center gap-4 justify-between group-hover:border-indigo-100 transition-colors">
                                         <div id={`qr-${table.id}`} className="bg-white">
                                             <QRCodeSVG
-                                                value={`${origin}/dine-in/${table.restaurant.slug}/table/${table.id}`}
+                                                value={`${origin}/${table.restaurant.slug}/menu/${table.id}`}
                                                 size={80}
                                                 level="M"
                                                 includeMargin={false}

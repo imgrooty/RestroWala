@@ -14,7 +14,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import { Search, X, Loader2 } from 'lucide-react';
+import { Search, X, Loader2, ShoppingCart } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +24,7 @@ import ARMenuViewer from '@/components/customer/ARMenuViewer';
 import { useCart } from '@/hooks/useCart';
 import { useDebounce } from '@/hooks/useDebounce';
 import { MenuItemWithRelations } from '@/types/menu';
-import { apiClient } from '@/lib/api-client';
+import Link from 'next/link';
 
 interface MenuResponse {
   data: MenuItemWithRelations[];
@@ -39,9 +39,10 @@ interface MenuResponse {
 
 export default function MenuPage() {
   const params = useParams();
+  const slug = (params?.slug as string) || '';
   const tableId = (params?.tableId as string) || '';
   
-  const { addItem } = useCart();
+  const { addItem, itemCount } = useCart(slug);
   const [menuItems, setMenuItems] = useState<MenuItemWithRelations[]>([]);
   const [categories, setCategories] = useState<MenuResponse['categories']>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -53,38 +54,36 @@ export default function MenuPage() {
   
   const debouncedSearch = useDebounce(searchQuery, 300);
 
-  // Fetch menu items
+  // Fetch menu items using slug (works for unauthenticated guests scanning QR)
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        // First, get table info to get restaurant ID
-        const tableResponse = await apiClient.get<{ table: { restaurantId: string } }>(`/tables/${tableId}`);
-        const restaurantId = tableResponse.table.restaurantId;
-
-        // Build query params
-        const params = new URLSearchParams();
+        // Build query params using slug directly (no auth required)
+        const queryParams = new URLSearchParams();
+        queryParams.append('slug', slug);
+        queryParams.append('isAvailable', 'true');
         if (selectedCategory) {
-          params.append('categoryId', selectedCategory);
+          queryParams.append('categoryId', selectedCategory);
         }
         if (debouncedSearch) {
-          params.append('search', debouncedSearch);
+          queryParams.append('search', debouncedSearch);
         }
         if (dietaryFilter === 'vegetarian') {
-          params.append('isVegetarian', 'true');
+          queryParams.append('isVegetarian', 'true');
         } else if (dietaryFilter === 'vegan') {
-          params.append('isVegan', 'true');
+          queryParams.append('isVegan', 'true');
         } else if (dietaryFilter === 'glutenFree') {
-          params.append('isGlutenFree', 'true');
+          queryParams.append('isGlutenFree', 'true');
         }
-        params.append('restaurantId', restaurantId);
-        params.append('isAvailable', 'true');
 
-        const response = await apiClient.get<MenuResponse>(`/menu?${params.toString()}`);
-        setMenuItems(response.data);
-        setCategories(response.categories);
+        const response = await fetch(`/api/menu?${queryParams.toString()}`);
+        if (!response.ok) throw new Error('Failed to fetch menu');
+        const data: MenuResponse = await response.json();
+        setMenuItems(data.data || []);
+        setCategories(data.categories || []);
       } catch (err) {
         console.error('Error fetching menu items:', err);
         setError('Failed to load menu items. Please try again.');
@@ -93,10 +92,10 @@ export default function MenuPage() {
       }
     };
 
-    if (tableId) {
+    if (slug) {
       fetchMenuItems();
     }
-  }, [tableId, selectedCategory, debouncedSearch, dietaryFilter]);
+  }, [slug, selectedCategory, debouncedSearch, dietaryFilter]);
 
   const handleAddToCart = (item: MenuItemWithRelations) => {
     addItem({
@@ -122,7 +121,20 @@ export default function MenuPage() {
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold mb-4">Our Menu</h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold">Our Menu</h1>
+            <Link href={`/${slug}/cart?tableId=${tableId}`}>
+              <Button variant="outline" className="relative">
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Cart
+                {itemCount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                    {itemCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
+          </div>
           
           {/* Search Bar */}
           <div className="relative mb-4">

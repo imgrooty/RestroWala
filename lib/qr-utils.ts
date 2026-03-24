@@ -17,9 +17,9 @@ export function generateUniqueQRCode(): string {
 /**
  * Generate QR code URL for a table
  */
-export function getTableQRUrl(tableId: string, baseUrl?: string): string {
+export function getTableQRUrl(tableId: string, slug: string, baseUrl?: string): string {
   const base = baseUrl || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  return `${base}/customer/menu?table=${tableId}`;
+  return `${base}/${slug}/menu/${tableId}`;
 }
 
 /**
