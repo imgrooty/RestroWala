@@ -88,10 +88,18 @@ export async function GET(request: NextRequest) {
     if (minPrice || maxPrice) {
       const priceFilter: Prisma.FloatFilter = {};
       if (minPrice) {
-        priceFilter.gte = parseFloat(minPrice);
+        const min = parseFloat(minPrice);
+        if (!Number.isFinite(min)) {
+          return NextResponse.json({ error: 'Invalid minPrice value' }, { status: 400 });
+        }
+        priceFilter.gte = min;
       }
       if (maxPrice) {
-        priceFilter.lte = parseFloat(maxPrice);
+        const max = parseFloat(maxPrice);
+        if (!Number.isFinite(max)) {
+          return NextResponse.json({ error: 'Invalid maxPrice value' }, { status: 400 });
+        }
+        priceFilter.lte = max;
       }
       where.price = priceFilter;
     }

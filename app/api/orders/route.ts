@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     // Role-based filtering enhancements
     if (session && session.user.restaurantId) {
       // If user is staff, enforce their own restaurantId unless they are SUPER_ADMIN
-      if (session.user.role !== 'SUPER_ADMIN') {
+      if (session.user.role !== UserRole.SUPER_ADMIN) {
         restaurantId = session.user.restaurantId;
       }
     }
