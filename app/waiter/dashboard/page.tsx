@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import {
   Users,
   Clock,
@@ -21,6 +22,7 @@ import { TableStatus } from '@/types/prisma';
 
 export default function WaiterDashboardPage() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [tables, setTables] = useState<any[]>([]);
   const [loadingItems, setLoadingItems] = useState(true);
   const { orders } = useOrders({ autoRefresh: true });
@@ -31,7 +33,7 @@ export default function WaiterDashboardPage() {
       try {
         const res = await fetch('/api/tables');
         const data = await res.json();
-        setTables(data.tables || []);
+        setTables(data.data || []);
       } catch (error) {
         console.error("Error fetching tables:", error);
       } finally {
@@ -147,9 +149,32 @@ export default function WaiterDashboardPage() {
                     </Badge>
                   </div>
                   <div className="flex gap-3">
-                    <Button variant="outline" size="lg" className="flex-1 rounded-2xl font-black text-xs border-2 border-slate-100 hover:bg-slate-50 uppercase tracking-widest">Details</Button>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="flex-1 rounded-2xl font-black text-xs border-2 border-slate-100 hover:bg-slate-50 uppercase tracking-widest"
+                      onClick={() => router.push(`/waiter/orders/${order.id}`)}
+                    >
+                      Details
+                    </Button>
                     {order.status === 'READY' && (
-                      <Button size="lg" className="flex-1 rounded-2xl font-black text-xs bg-emerald-600 hover:bg-emerald-700 shadow-xl shadow-emerald-200 uppercase tracking-widest">
+                      <Button
+                        size="lg"
+                        className="flex-1 rounded-2xl font-black text-xs bg-emerald-600 hover:bg-emerald-700 shadow-xl shadow-emerald-200 uppercase tracking-widest"
+                        onClick={async () => {
+                          try {
+                            const res = await fetch(`/api/orders/${order.id}`, {
+                              method: 'PATCH',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ status: 'SERVED' })
+                            });
+                            if (!res.ok) throw new Error('Failed to update status');
+                            toast({ title: "Order Served", description: `Order #${order.orderNumber.slice(-3)} has been served.` });
+                          } catch (error) {
+                            console.error("Error serving order:", error);
+                          }
+                        }}
+                      >
                         Serve Now
                       </Button>
                     )}
