@@ -95,14 +95,15 @@ export async function GET(request: NextRequest) {
       // Customers see only their orders
       where.userId = session.user.id;
     } else if (userRole === UserRole.WAITER) {
-      // Prefer assigned tables, but fall back to restaurant orders when no assignments exist yet.
+      // Only show orders from assigned tables; return nothing when unassigned.
       const waiterTables = await prisma.table.findMany({
         where: { waiterId: session.user.id },
         select: { id: true },
       });
-      if (waiterTables.length > 0) {
-        where.tableId = { in: waiterTables.map((t) => t.id) };
+      if (waiterTables.length === 0) {
+        return NextResponse.json({ data: [] });
       }
+      where.tableId = { in: waiterTables.map((t) => t.id) };
     } else if (userRole === UserRole.KITCHEN_STAFF) {
       // Kitchen needs to see newly created orders immediately.
       where.status = { in: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PREPARING, OrderStatus.READY] };

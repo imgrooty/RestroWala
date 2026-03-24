@@ -102,6 +102,42 @@ export async function GET(request: Request) {
        return new Response('Restaurant not found', { status: 404 })
     }
 
+    // Validate logo URL to prevent SSRF: only allow well-known public hosts
+    function isSafePublicImageUrl(value: string): boolean {
+      try {
+        const url = new URL(value);
+        if (!['http:', 'https:'].includes(url.protocol)) return false;
+        const hostname = url.hostname.toLowerCase();
+        // Reject loopback / private / link-local / internal addresses
+        if (
+          hostname === 'localhost' ||
+          hostname === '0.0.0.0' ||
+          // IPv4 loopback
+          /^127\./.test(hostname) ||
+          // IPv4 private class A
+          /^10\./.test(hostname) ||
+          // IPv4 private class B
+          /^172\.(1[6-9]|2\d|3[01])\./.test(hostname) ||
+          // IPv4 private class C
+          /^192\.168\./.test(hostname) ||
+          // IPv4 link-local
+          /^169\.254\./.test(hostname) ||
+          // IPv6 loopback / link-local
+          hostname === '::1' ||
+          /^fe80:/i.test(hostname) ||
+          // Cloud metadata endpoints
+          hostname === '169.254.169.254' ||
+          hostname === 'metadata.google.internal' ||
+          // Internal DNS suffixes
+          hostname.endsWith('.internal') ||
+          hostname.endsWith('.local')
+        ) return false;
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
     return new ImageResponse(
       (
         <div
@@ -124,7 +160,7 @@ export async function GET(request: Request) {
               textAlign: 'center',
             }}
           >
-            {restaurant.logo && (restaurant.logo.startsWith('http://') || restaurant.logo.startsWith('https://')) ? (
+            {restaurant.logo && isSafePublicImageUrl(restaurant.logo) ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={restaurant.logo}

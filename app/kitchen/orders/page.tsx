@@ -64,9 +64,23 @@ export default function KitchenOrdersPage() {
   useEffect(() => {
     if (!ordersLoading && allOrders) {
       setOrders(
-        allOrders.filter((o: any) =>
-          ['PENDING', 'CONFIRMED', 'PREPARING', 'READY'].includes(o.status)
-        ) as any
+        allOrders
+          .filter((o) =>
+            ['PENDING', 'CONFIRMED', 'PREPARING', 'READY'].includes(o.status)
+          )
+          .map((o) => {
+            const createdAt = o.createdAt instanceof Date
+              ? o.createdAt
+              : (typeof o.createdAt === 'string' || typeof o.createdAt === 'number')
+                ? new Date(o.createdAt)
+                : new Date(0);
+            const updatedAt = o.updatedAt instanceof Date
+              ? o.updatedAt
+              : (typeof o.updatedAt === 'string' || typeof o.updatedAt === 'number')
+                ? new Date(o.updatedAt)
+                : new Date(0);
+            return { ...o, createdAt, updatedAt };
+          })
       );
       setIsLoading(false);
     }

@@ -14,15 +14,28 @@ import Link from 'next/link';
 
 export default function CartPage() {
   const params = useParams();
-  const slug = (params?.slug as string) || '';
+  const slug = params?.slug as string | undefined;
 
-  const { items, removeItem, updateQuantity, total, clearCart, itemCount, isLoading: cartLoading } = useCart(slug);
+  const { items, removeItem, updateQuantity, total, clearCart, itemCount, isLoading: cartLoading } = useCart(slug ?? '');
   const { toast } = useToast();
   const router = useRouter();
   const [tableNumber, setTableNumber] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+
+  if (!slug) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="mx-auto h-12 w-12 text-destructive mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Restaurant not found</h2>
+          <p className="text-muted-foreground mb-4">No restaurant slug was provided.</p>
+          <Button onClick={() => router.back()}>Go Back</Button>
+        </div>
+      </div>
+    );
+  }
 
   const handlePlaceOrder = async () => {
     if (!tableNumber || !customerName) {

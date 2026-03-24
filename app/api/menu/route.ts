@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     }
     // Public access via slug
     else if (slug) {
-      const restaurant = await prisma.restaurant.findFirst({
+      const restaurant = await prisma.restaurant.findUnique({
         where: { slug },
         select: { id: true }
       });

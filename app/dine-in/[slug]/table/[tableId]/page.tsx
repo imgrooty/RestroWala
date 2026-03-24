@@ -103,6 +103,10 @@ export default function DineInPage() {
     };
 
     const placeOrder = async () => {
+        if (!tableId) {
+            toast({ title: "Invalid table", description: "Table information is missing.", variant: "destructive" });
+            return;
+        }
         if (!customerName) {
             toast({ title: "Name required", description: "Please enter your name for the order.", variant: "destructive" });
             return;
