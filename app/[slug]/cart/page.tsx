@@ -8,13 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCart } from '@/hooks/useCart';
 import { useToast } from '@/components/ui/use-toast';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function CartPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const slug = params?.slug as string | undefined;
+  // tableId can come from QR scan URL (e.g. /cart?tableId=abc123)
+  const tableIdFromUrl = searchParams?.get('tableId') || '';
 
   const { items, removeItem, updateQuantity, total, clearCart, itemCount, isLoading: cartLoading } = useCart(slug ?? '');
   const { toast } = useToast();
@@ -38,10 +41,21 @@ export default function CartPage() {
   }
 
   const handlePlaceOrder = async () => {
-    if (!tableNumber || !customerName) {
+    if (!customerName) {
       toast({
         title: "Missing Information",
-        description: "Please enter both your name and table number.",
+        description: "Please enter your name.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // If tableId is in URL (QR scan flow), use it directly.
+    // Otherwise fall back to looking up by table number.
+    if (!tableIdFromUrl && !tableNumber) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter your table number.",
         variant: "destructive"
       });
       return;
@@ -49,20 +63,29 @@ export default function CartPage() {
 
     setIsSubmitting(true);
     try {
-      // Find table ID by number scoped to this restaurant slug
-      const tableResponse = await fetch(`/api/tables?number=${tableNumber}&slug=${slug}`);
-      const tableData = await tableResponse.json();
+      let resolvedTableId = tableIdFromUrl;
 
-      const tableId = tableData.tables?.[0]?.id;
-      if (!tableId) {
-        throw new Error("Invalid table number for this restaurant");
+      if (!resolvedTableId) {
+        // Look up table by number and slug for manual entry
+        const params = new URLSearchParams({ number: tableNumber, slug });
+        const tableResponse = await fetch(`/api/tables/by-number?${params.toString()}`);
+        const tableData = await tableResponse.json();
+
+        if (!tableResponse.ok) {
+          throw new Error(tableData.error || "Invalid table number for this restaurant");
+        }
+
+        resolvedTableId = tableData.table?.id;
+        if (!resolvedTableId) {
+          throw new Error("Invalid table number for this restaurant");
+        }
       }
 
-      const response = await fetch(`/api/orders?slug=${slug}`, {
+      const response = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          tableId,
+          tableId: resolvedTableId,
           customerName,
           items: items.map(item => ({
             menuItemId: item.menuItemId,
@@ -79,12 +102,12 @@ export default function CartPage() {
       clearCart();
       toast({
         title: "Order Placed!",
-        description: `Your order #${orderData.order.orderNumber} is being prepared.`,
+        description: `Your order #${orderData.data.orderNumber} is being prepared.`,
       });
 
       // Redirect after 3 seconds to the localized order page
       setTimeout(() => {
-        router.push(`/${slug}/order/${orderData.order.id}`);
+        router.push(`/${slug}/order/${orderData.data.id}`);
       }, 3000);
 
     } catch (error) {
@@ -205,23 +228,26 @@ export default function CartPage() {
                         onChange={(e) => setCustomerName(e.target.value)}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="table" className="flex items-center gap-2 text-sm font-bold text-gray-600 uppercase tracking-wider">
-                        <Table className="h-4 w-4" />
-                        Table Number
-                      </Label>
-                      <Input
-                        id="table"
-                        placeholder="e.g. 12"
-                        className="h-12 rounded-xl border-slate-200 focus:ring-primary text-lg font-bold"
-                        value={tableNumber}
-                        onChange={(e) => setTableNumber(e.target.value)}
-                      />
-                      <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        Required to bring your food to you.
-                      </p>
-                    </div>
+                    {/* Show table number input only when tableId is not provided via QR URL */}
+                    {!tableIdFromUrl && (
+                      <div className="space-y-2">
+                        <Label htmlFor="table" className="flex items-center gap-2 text-sm font-bold text-gray-600 uppercase tracking-wider">
+                          <Table className="h-4 w-4" />
+                          Table Number
+                        </Label>
+                        <Input
+                          id="table"
+                          placeholder="e.g. 12"
+                          className="h-12 rounded-xl border-slate-200 focus:ring-primary text-lg font-bold"
+                          value={tableNumber}
+                          onChange={(e) => setTableNumber(e.target.value)}
+                        />
+                        <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          Required to bring your food to you.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="divider border-t border-slate-100 pt-6 space-y-4">
@@ -243,7 +269,7 @@ export default function CartPage() {
                   <Button
                     className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-lg font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 group"
                     onClick={handlePlaceOrder}
-                    disabled={isSubmitting || items.length === 0 || !customerName || !tableNumber}
+                    disabled={isSubmitting || items.length === 0 || !customerName || (!tableIdFromUrl && !tableNumber)}
                   >
                     {isSubmitting ? (
                       <Loader2 className="h-5 w-5 animate-spin mr-2" />

@@ -43,6 +43,7 @@ export async function POST(
     // Check if table exists
     const existingTable = await prisma.table.findUnique({
       where: { id: params.id },
+      include: { restaurant: { select: { slug: true } } },
     });
 
     if (!existingTable) {
@@ -63,8 +64,8 @@ export async function POST(
       },
     });
 
-    // Generate QR code URL
-    const qrCodeUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/customer/menu?table=${table.id}`;
+    // Generate QR code URL pointing to the menu order page
+    const qrCodeUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/${existingTable.restaurant.slug}/menu/${table.id}`;
 
     // Generate QR code as data URL
     const qrDataUrl = await QRCode.toDataURL(qrCodeUrl, {
@@ -110,6 +111,7 @@ export async function GET(
         qrCode: true,
         floor: true,
         location: true,
+        restaurant: { select: { slug: true } },
       },
     });
 
@@ -120,8 +122,8 @@ export async function GET(
       );
     }
 
-    // Generate QR code URL
-    const qrCodeUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/customer/menu?table=${table.id}`;
+    // Generate QR code URL pointing to the menu order page
+    const qrCodeUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/${table.restaurant.slug}/menu/${table.id}`;
 
     // Return based on format
     if (format === 'png') {
