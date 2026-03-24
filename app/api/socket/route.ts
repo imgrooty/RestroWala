@@ -7,7 +7,11 @@ export async function GET() {
   try {
     if (!isIOInitialized()) {
       return NextResponse.json(
-        { status: 'inactive', message: 'Socket.io not yet initialized. Visit /api/socket first.' },
+        {
+          status: 'inactive',
+          message: 'Socket.io not yet initialized. Call /api/socketio once to bootstrap the server.',
+          initEndpoint: '/api/socketio',
+        },
         { status: 200 }
       );
     }

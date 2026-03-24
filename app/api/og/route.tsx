@@ -125,6 +125,7 @@ export async function GET(request: Request) {
             }}
           >
             {restaurant.logo && (restaurant.logo.startsWith('http://') || restaurant.logo.startsWith('https://')) ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={restaurant.logo}
                 alt={restaurant.name}

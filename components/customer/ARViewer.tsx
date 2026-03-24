@@ -17,7 +17,7 @@ interface ARViewerProps {
   fallbackImage?: string;
 }
 
-export default function ARViewer({ modelUrl, modelFormat, itemName, fallbackImage }: ARViewerProps) {
+export default function ARViewer(_props: ARViewerProps) {
   return (
     <div className="ar-viewer">
       {/* AR viewer implementation using @google/model-viewer */}

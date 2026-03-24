@@ -37,8 +37,8 @@ export default function DineInPage() {
     const [placingOrder, setPlacingOrder] = useState(false);
 
     // Derived
-    const slug = params.slug as string;
-    const tableId = params.tableId as string;
+    const slug = (params?.slug as string) || '';
+    const tableId = (params?.tableId as string) || '';
     const totalAmount = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -63,7 +63,7 @@ export default function DineInPage() {
                 // Actually, let's fetch table details to verify valid table + get restaurant name relative to table
                 fetchTable();
             }
-        } catch (error) {
+        } catch {
             console.error('Failed to load menu');
         } finally {
             setLoading(false);
@@ -126,7 +126,7 @@ export default function DineInPage() {
             toast({ title: "Order Placed!", description: "The kitchen has received your order." });
             setCart([]);
             setIsCartOpen(false);
-        } catch (error) {
+        } catch {
             toast({ title: "Error", description: "Could not place order. Try again.", variant: "destructive" });
         } finally {
             setPlacingOrder(false);

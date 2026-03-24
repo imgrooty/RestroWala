@@ -11,11 +11,11 @@
 'use client';
 
 interface TableLayoutProps {
-  tables: any[]; // TODO: Replace with proper Table type
+  tables: unknown[]; // TODO: Replace with proper Table type
   onTableClick: (tableId: string) => void;
 }
 
-export default function TableLayout({ tables, onTableClick }: TableLayoutProps) {
+export default function TableLayout(_props: TableLayoutProps) {
   return (
     <div className="table-layout">
       {/* Table layout implementation */}

@@ -13,6 +13,7 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { menuItemSchema } from '@/lib/validations';
+import { Prisma } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,8 +37,8 @@ export async function GET(request: NextRequest) {
     }
     // Public access via slug
     else if (slug) {
-      const restaurant = await prisma.restaurant.findUnique({
-        where: { slug } as any,
+      const restaurant = await prisma.restaurant.findFirst({
+        where: { slug },
         select: { id: true }
       });
       if (restaurant) {
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Build where clause
-    const where: any = {};
+    const where: Prisma.MenuItemWhereInput = {};
 
     if (categoryId) {
       where.categoryId = categoryId;
@@ -85,13 +86,14 @@ export async function GET(request: NextRequest) {
     }
 
     if (minPrice || maxPrice) {
-      where.price = {};
+      const priceFilter: Prisma.FloatFilter = {};
       if (minPrice) {
-        where.price.gte = parseFloat(minPrice);
+        priceFilter.gte = parseFloat(minPrice);
       }
       if (maxPrice) {
-        where.price.lte = parseFloat(maxPrice);
+        priceFilter.lte = parseFloat(maxPrice);
       }
+      where.price = priceFilter;
     }
 
     if (restaurantId) {

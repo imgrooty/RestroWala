@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Server as NetServer } from 'http';
+import { Server as IOServer } from 'socket.io';
 import { initIO } from '@/lib/socket';
 
 export const config = {
@@ -8,12 +9,20 @@ export const config = {
     },
 };
 
-export default function handler(_req: NextApiRequest, res: NextApiResponse & { socket: { server: NetServer } }) {
-    if ((res.socket.server as any).io) {
+type NextApiResponseWithSocket = NextApiResponse & {
+    socket: {
+        server: NetServer & {
+            io?: IOServer;
+        };
+    };
+};
+
+export default function handler(_req: NextApiRequest, res: NextApiResponseWithSocket) {
+    if (res.socket.server.io) {
         console.log('Socket is already running');
     } else {
         console.log('Socket is initializing...');
-        initIO(res.socket.server);
+        res.socket.server.io = initIO(res.socket.server);
     }
-    res.end();
+    res.status(200).json({ ok: true, initialized: true });
 }

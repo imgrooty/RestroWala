@@ -11,11 +11,11 @@
 'use client';
 
 interface OrdersListProps {
-  orders: any[]; // TODO: Replace with proper Order type
+  orders: unknown[]; // TODO: Replace with proper Order type
   onStatusChange: (orderId: string, status: string) => void;
 }
 
-export default function OrdersList({ orders, onStatusChange }: OrdersListProps) {
+export default function OrdersList(_props: OrdersListProps) {
   return (
     <div className="orders-list">
       {/* Orders list implementation */}

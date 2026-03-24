@@ -15,6 +15,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { createOrderSchema } from '@/lib/validations';
 import { OrderStatus, UserRole, TableStatus } from '@/types/prisma';
+import { Prisma } from '@prisma/client';
 // Socket.io logic removed
 
 /**
@@ -44,8 +45,8 @@ export async function GET(request: NextRequest) {
 
     // If slug is provided (for guest tracking), resolve restaurantId
     if (slug) {
-      const restaurant = await prisma.restaurant.findUnique({
-        where: { slug } as any,
+      const restaurant = await prisma.restaurant.findFirst({
+        where: { slug },
         select: { id: true }
       });
       if (restaurant) {
@@ -56,7 +57,7 @@ export async function GET(request: NextRequest) {
     // Role-based filtering enhancements
     if (session && session.user.restaurantId) {
       // If user is staff, enforce their own restaurantId unless they are SUPER_ADMIN
-      if (session.user.role !== (UserRole as any).SUPER_ADMIN) {
+      if (session.user.role !== 'SUPER_ADMIN') {
         restaurantId = session.user.restaurantId;
       }
     }
@@ -86,7 +87,7 @@ export async function GET(request: NextRequest) {
     }
 
     const userRole = session.user.role as UserRole;
-    const where: any = {};
+    const where: Prisma.OrderWhereInput = {};
     if (restaurantId) where.restaurantId = restaurantId;
 
     // Role-based filtering
@@ -94,15 +95,17 @@ export async function GET(request: NextRequest) {
       // Customers see only their orders
       where.userId = session.user.id;
     } else if (userRole === UserRole.WAITER) {
-      // Waiters see orders from their assigned tables
+      // Prefer assigned tables, but fall back to restaurant orders when no assignments exist yet.
       const waiterTables = await prisma.table.findMany({
         where: { waiterId: session.user.id },
         select: { id: true },
       });
-      where.tableId = { in: waiterTables.map((t: any) => t.id) };
+      if (waiterTables.length > 0) {
+        where.tableId = { in: waiterTables.map((t) => t.id) };
+      }
     } else if (userRole === UserRole.KITCHEN_STAFF) {
-      // Kitchen sees orders that are being prepared or ready
-      where.status = { in: [OrderStatus.CONFIRMED, OrderStatus.PREPARING, OrderStatus.READY] };
+      // Kitchen needs to see newly created orders immediately.
+      where.status = { in: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PREPARING, OrderStatus.READY] };
     }
     // MANAGER and ADMIN see all orders (no additional filter)
 
@@ -221,7 +224,7 @@ export async function POST(request: NextRequest) {
     // Calculate order totals
     let totalAmount = 0;
     const orderItems = data.items.map((item) => {
-      const menuItem = menuItems.find((mi: any) => mi.id === item.menuItemId)!;
+      const menuItem = menuItems.find((mi) => mi.id === item.menuItemId)!;
       const price = menuItem.discountPrice ?? menuItem.price;
       const subtotal = price * item.quantity;
       totalAmount += subtotal;

@@ -12,12 +12,12 @@
 'use client';
 
 interface OrderTicketProps {
-  order: any; // TODO: Replace with proper Order type
+  order: unknown; // TODO: Replace with proper Order type
   onComplete: (orderId: string) => void;
   onMarkReady: (orderId: string) => void;
 }
 
-export default function OrderTicket({ order, onComplete, onMarkReady }: OrderTicketProps) {
+export default function OrderTicket(_props: OrderTicketProps) {
   return (
     <div className="order-ticket">
       {/* Order ticket implementation */}

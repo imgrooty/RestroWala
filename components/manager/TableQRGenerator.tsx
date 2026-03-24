@@ -256,7 +256,7 @@ export default function TableQRGenerator({ table }: TableQRGeneratorProps) {
 
       // Reload page or refresh data
       window.location.reload();
-    } catch (error) {
+    } catch {
       toast({
         variant: 'destructive',
         title: 'Error',

@@ -14,7 +14,7 @@ interface OrderStatusTrackerProps {
   currentStatus: string;
 }
 
-export default function OrderStatusTracker({ orderId, currentStatus }: OrderStatusTrackerProps) {
+export default function OrderStatusTracker(_props: OrderStatusTrackerProps) {
   return (
     <div className="order-status-tracker">
       {/* Order status tracker implementation */}

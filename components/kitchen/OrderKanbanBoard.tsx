@@ -12,11 +12,11 @@
 'use client';
 
 interface OrderKanbanBoardProps {
-  orders: any[]; // TODO: Replace with proper Order type
+  orders: unknown[]; // TODO: Replace with proper Order type
   onStatusChange: (orderId: string, status: string) => void;
 }
 
-export default function OrderKanbanBoard({ orders, onStatusChange }: OrderKanbanBoardProps) {
+export default function OrderKanbanBoard(_props: OrderKanbanBoardProps) {
   return (
     <div className="order-kanban-board">
       {/* Kanban board implementation */}

@@ -14,7 +14,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import { Search, Filter, X, Loader2 } from 'lucide-react';
+import { Search, X, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,7 +39,7 @@ interface MenuResponse {
 
 export default function MenuPage() {
   const params = useParams();
-  const tableId = params.tableId as string;
+  const tableId = (params?.tableId as string) || '';
   
   const { addItem } = useCart();
   const [menuItems, setMenuItems] = useState<MenuItemWithRelations[]>([]);

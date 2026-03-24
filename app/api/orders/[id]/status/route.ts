@@ -14,6 +14,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { OrderStatus, UserRole, TableStatus } from '@/types/prisma';
 import { validateTransition } from '@/lib/orderStateMachine';
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 const updateStatusSchema = z.object({
@@ -87,7 +88,7 @@ export async function PATCH(
     }
 
     // Prepare update data with timestamps
-    const updateData: any = {
+    const updateData: Prisma.OrderUpdateInput = {
       status: newStatus,
       updatedAt: new Date(),
     };

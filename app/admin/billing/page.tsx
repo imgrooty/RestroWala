@@ -73,7 +73,14 @@ export default function BillingPage() {
         if (payRes.success) setPayments(payRes.data || []);
         else toast({ title: "Error", description: payRes.error, variant: "destructive" });
 
-        if (metricsRes.success) setMetrics(metricsRes.data);
+        if (metricsRes.success) {
+            setMetrics(metricsRes.data || {
+                totalRevenue: 0,
+                transactionCount: 0,
+                completedTransactionCount: 0,
+                avgTicket: 0,
+            });
+        }
         else toast({ title: "Error", description: metricsRes.error, variant: "destructive" });
 
         setLoading(false);

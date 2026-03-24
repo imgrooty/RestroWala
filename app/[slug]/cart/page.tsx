@@ -14,7 +14,7 @@ import Link from 'next/link';
 
 export default function CartPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = (params?.slug as string) || '';
 
   const { items, removeItem, updateQuantity, total, clearCart, itemCount, isLoading: cartLoading } = useCart(slug);
   const { toast } = useToast();
