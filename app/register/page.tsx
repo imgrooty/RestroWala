@@ -10,6 +10,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 
+/**
+ * Render the two-step restaurant registration page with entity details and owner account forms.
+ *
+ * Manages local form state (restaurant name/slug and owner name/email/password), step navigation,
+ * loading state, slug generation for a friendly URL, and submission to the `/api/saas/register` endpoint.
+ * On successful registration it shows a success toast and navigates to `/login`; on failure it shows an error toast.
+ *
+ * @returns The registration page JSX element
+ */
 export default function RegisterRestaurantPage() {
     const [step, setStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);

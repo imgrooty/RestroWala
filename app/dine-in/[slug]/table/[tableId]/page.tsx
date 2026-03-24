@@ -19,6 +19,13 @@ interface CartItem {
     specialInstructions?: string;
 }
 
+/**
+ * Renders the dine-in ordering page for a restaurant slug and table, providing menu browsing, search/category filtering, a local cart, and order submission.
+ *
+ * Loads menu items by the URL `slug`, allows adding/removing items and adjusting quantities in a local cart, collects a guest name, and submits an order for the current `tableId`.
+ *
+ * @returns The Dine-in ordering page UI as a React element.
+ */
 export default function DineInPage() {
     const params = useParams();
     const { toast } = useToast();

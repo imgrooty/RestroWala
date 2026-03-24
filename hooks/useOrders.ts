@@ -26,6 +26,25 @@ interface UseOrdersOptions {
   refreshInterval?: number;
 }
 
+/**
+ * Manages fetching and CRUD operations for orders with optional polling support.
+ *
+ * Accepts an options object to apply server-side filters and enable automatic refresh.
+ *
+ * @param options - Configuration for the hook:
+ *   - `filters` (optional): query filters to apply when fetching orders; may include `status` (string or string[]), `tableId`, `userId`, `restaurantId`, and `slug`.
+ *   - `autoRefresh` (optional): when `true`, periodically refetches orders at `refreshInterval`.
+ *   - `refreshInterval` (optional): polling interval in milliseconds (default 30000).
+ * @returns An object containing:
+ *   - `orders`: the current array of orders.
+ *   - `loading`: `true` while a fetch is in progress, `false` otherwise.
+ *   - `error`: an error message when a fetch fails, or `null`.
+ *   - `connected`: a legacy compatibility flag (always `false`).
+ *   - `refetch`: function to re-run the orders fetch.
+ *   - `createOrder`: function to create a new order; returns the created order object from the API response.
+ *   - `updateOrderStatus`: function to update an order's status; returns the updated order object from the API response.
+ *   - `deleteOrder`: function to delete an order.
+ */
 export function useOrders(options: UseOrdersOptions = {}) {
   const { filters, autoRefresh = false, refreshInterval = 30000 } = options;
 

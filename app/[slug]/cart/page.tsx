@@ -12,6 +12,15 @@ import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
+/**
+ * Render the cart and checkout UI for a restaurant identified by the route `slug`.
+ *
+ * Renders three states: an order confirmation screen after a successful submission, a centered loading spinner while cart data is loading, or the interactive cart and checkout form that lets the user edit items, enter customer name and table number, clear the cart, and place an order.
+ *
+ * Placing an order validates required fields, attempts to resolve the table and create the order, shows success or error toasts, clears the cart on success, and redirects to the order tracker.
+ *
+ * @returns The JSX element for the cart page: either the confirmation UI, a loading spinner, or the full cart/checkout interface.
+ */
 export default function CartPage() {
   const params = useParams();
   const slug = (params?.slug as string) || '';

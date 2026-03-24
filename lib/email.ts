@@ -14,13 +14,9 @@ interface EmailOptions {
 }
 
 /**
- * Send email using configured email service
- * 
- * TODO: Configure your preferred email service:
- * - SendGrid
- * - Resend
- * - AWS SES
- * - Nodemailer
+ * Send an email using the configured provider; in development the email is logged instead of sent.
+ *
+ * @throws Error when running outside development and no email provider is configured
  */
 export async function sendEmail({ to, subject, html, text: _text }: EmailOptions) {
   // Example with SendGrid:

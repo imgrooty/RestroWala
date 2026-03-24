@@ -24,6 +24,15 @@ interface RevenueDataPoint {
   averageOrderValue: number;
 }
 
+/**
+ * Produce revenue analytics for a restaurant over a selectable date range, including a gap-filled time series, aggregate totals, averages, and percent changes versus the previous period.
+ *
+ * @returns A JSON object with a `data` property containing:
+ *  - `period` — the selected period identifier (`day`, `week`, `month`, `year`, or custom`),
+ *  - `startDate` / `endDate` — ISO dates (`yyyy-MM-dd`) for the current window,
+ *  - `dataPoints` — an array of revenue datapoints (date label, `revenue`, `orders`, `customers`, `averageOrderValue`),
+ *  - `summary` — aggregate metrics: `totalRevenue`, `totalOrders`, `totalCustomers`, `averageOrderValue`, `revenueChange` (percentage vs previous window), and `ordersChange` (percentage vs previous window).
+ */
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

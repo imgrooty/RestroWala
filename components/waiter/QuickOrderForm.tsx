@@ -15,6 +15,14 @@ interface QuickOrderFormProps {
   onSubmit: (data: unknown) => void;
 }
 
+/**
+ * Renders a simplified quick-order form for taking orders at a table.
+ *
+ * @param _props - Component props containing:
+ *   - `tableId`: identifier of the table the order is for
+ *   - `onSubmit`: callback invoked with the form data when the order is submitted
+ * @returns A JSX element containing the quick-order form markup
+ */
 export default function QuickOrderForm(_props: QuickOrderFormProps) {
   return (
     <form className="quick-order-form">

@@ -9,6 +9,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Handles POST requests from payment gateway webhooks and acknowledges receipt.
+ *
+ * @returns A JSON acknowledgement `{ received: true }` on success; on failure returns `{ error: 'Webhook processing failed' }` with HTTP status 500.
+ */
 export async function POST(_request: NextRequest) {
   try {
     // Verify webhook signature

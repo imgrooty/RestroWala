@@ -17,6 +17,15 @@ import { Badge } from '@/components/ui/badge';
 import { useOrders } from '@/hooks/useOrders';
 import { useToast } from '@/components/ui/use-toast';
 
+/**
+ * Renders the Cashier Station interface with a checkout queue, table map, and today's summary.
+ *
+ * Displays the signed-in cashier name, lists served orders awaiting payment, and shows current table statuses.
+ * On mount it fetches table data and integrates with the orders hook to auto-refresh pending payments.
+ * Provides UI actions to process payments (mark orders completed and mark tables for cleaning) and to mark cleaning tables as available.
+ *
+ * @returns The React element for the cashier dashboard containing order checkout cards, table tiles, and summary cards.
+ */
 export default function CashierDashboardPage() {
     const { data: session } = useSession();
     const [tables, setTables] = useState<any[]>([]);

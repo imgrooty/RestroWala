@@ -18,6 +18,14 @@ import {
 import { Label } from '@/components/ui/label';
 import { Plus, LayoutGrid, MapPin, Users, Printer, Loader2 } from 'lucide-react';
 
+/**
+ * Render the floor management page for viewing, creating, and printing table QR codes.
+ *
+ * Manages table state, loads data from the tables API, provides a dialog to create new tables,
+ * and renders QR codes with a print flow for individual tables.
+ *
+ * @returns The React element for the Tables management UI.
+ */
 export default function TablesPage() {
     const [tables, setTables] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);

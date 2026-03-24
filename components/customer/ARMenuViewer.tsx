@@ -25,6 +25,19 @@ interface ARMenuViewerProps {
   onClose: () => void;
 }
 
+/**
+ * Renders a modal dialog containing an interactive 3D model viewer with optional AR controls, loading/error UI, and fullscreen support.
+ *
+ * The component shows a Dialog when `isOpen` is true; while open it displays a <model-viewer> for `modelUrl`, an overlay spinner while loading, an optional `fallbackImage` on error, and an AR activation button when AR is available. Fullscreen state is managed via the Fullscreen API and synchronized with document fullscreen changes.
+ *
+ * @param modelUrl - URL of the 3D model to load
+ * @param modelFormat - Declared model format (default `'glb'`); accepted but not used by the component
+ * @param itemName - Human-readable name for the item; used for titles and image alt text
+ * @param fallbackImage - Optional image URL shown as a poster or when the model fails to load
+ * @param isOpen - Controls whether the dialog is rendered
+ * @param onClose - Callback invoked when the dialog open state changes
+ * @returns A modal Dialog containing the 3D model viewer, or `null` when `isOpen` is false
+ */
 export default function ARMenuViewer({
   modelUrl,
   modelFormat: _modelFormat = 'glb',

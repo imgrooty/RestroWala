@@ -23,8 +23,11 @@ const updateStatusSchema = z.object({
 });
 
 /**
- * PATCH /api/orders/[id]/status
- * Update order status
+ * Update an order's status, apply related timestamps and notes, adjust table availability when completed, and emit socket events.
+ *
+ * @param request - The incoming NextRequest
+ * @param params - Route parameters containing `id` of the target order
+ * @returns On success, a JSON object with `message` and `data` containing the updated order; on failure, a JSON object with `error` and an appropriate HTTP status (401, 400, 404, 500)
  */
 export async function PATCH(
   request: NextRequest,

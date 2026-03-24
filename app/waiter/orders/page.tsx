@@ -25,6 +25,13 @@ import { OrderWithRelations } from '@/types/order';
 import { OrderStatus, UserRole } from '@/types/prisma';
 import { apiClient } from '@/lib/api-client';
 
+/**
+ * Renders the waiter orders management page with search, table and status filters, real-time updates, and controls to view or change order status.
+ *
+ * The UI displays orders grouped by status (with READY orders prioritized), supports periodic polling and socket-driven updates, plays a notification sound for new/important updates, and exposes actions to update an order's status or view its details.
+ *
+ * @returns A React element that displays and manages waiter-assigned orders, including filtering, real-time socket updates, audio notifications, and status change actions.
+ */
 export default function WaiterOrdersPage() {
   const { data: session } = useSession();
   const router = useRouter();

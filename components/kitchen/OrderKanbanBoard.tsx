@@ -16,6 +16,12 @@ interface OrderKanbanBoardProps {
   onStatusChange: (orderId: string, status: string) => void;
 }
 
+/**
+ * Render the Order Kanban Board for a Kitchen Display System.
+ *
+ * @param _props - Props for the component; `orders` is the list of orders to display and `onStatusChange` is called with `(orderId, status)` when an order's status is changed.
+ * @returns The component's rendered JSX element representing the Kanban board layout for displaying and updating order statuses.
+ */
 export default function OrderKanbanBoard(_props: OrderKanbanBoardProps) {
   return (
     <div className="order-kanban-board">

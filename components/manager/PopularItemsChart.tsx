@@ -33,6 +33,15 @@ interface PopularItemsChartProps {
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1', '#d084d0', '#ffb347'];
 
+/**
+ * Render a vertical bar chart and a corresponding "Top 10 Items" list for popular menu items, with controls for sorting and CSV export.
+ *
+ * Displays a loading placeholder when `isLoading` is true and a "No data available" message when `items` is empty.
+ *
+ * @param items - Array of popular menu items used to build the chart and top-10 list; the component shows the top 10 entries after sorting.
+ * @param isLoading - When true, shows a centered loading state instead of the chart and list.
+ * @returns A React element containing: a header with sort and export controls, a vertical bar chart (orders or revenue), and a Top 10 items list with ranks, optional thumbnails, order counts, and formatted revenue.
+ */
 export default function PopularItemsChart({
   items,
   isLoading = false,

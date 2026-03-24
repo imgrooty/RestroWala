@@ -9,6 +9,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Handle file upload requests and respond with the uploaded file's URL or an error.
+ *
+ * @returns A NextResponse containing JSON `{ url: string }` on success, or `{ error: 'File upload failed' }` with HTTP status 500 on failure.
+ */
 export async function POST(_request: NextRequest) {
   try {
     // Auth check

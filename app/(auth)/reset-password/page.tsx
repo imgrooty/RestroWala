@@ -16,6 +16,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 
+/**
+ * Render the reset-password flow UI: reads and verifies a token from the URL, shows a validation/loading, an invalid/expired screen, the reset form, or a success message, and handles password submission.
+ *
+ * Reads the `token` query parameter and verifies it via the reset-token endpoint, validates password and confirmation fields, submits the new password to the reset endpoint, displays success or error toasts, and navigates to the login page after a successful reset.
+ *
+ * @returns A React element that renders the reset-password flow UI and its associated states and interactions.
+ */
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();

@@ -17,6 +17,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 
+/**
+ * Render the staff login form and handle the full authentication flow.
+ *
+ * Validates email and password, submits credentials, displays success or error toasts,
+ * fetches the authenticated session to perform role-based redirection (uses `callbackUrl` when present),
+ * and refreshes the router after navigation.
+ *
+ * @returns The React element that renders the login form UI
+ */
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();

@@ -8,6 +8,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Fetches a single inventory item by ID.
+ *
+ * @param _params - Route parameters; `_params.id` is the inventory item identifier.
+ * @returns A JSON response: on success `{ data: <inventory item> | null }`; on failure `{ error: string }` with HTTP status 500.
+ */
 export async function GET(
   _request: NextRequest,
   { params: _params }: { params: { id: string } }
@@ -23,6 +29,12 @@ export async function GET(
   }
 }
 
+/**
+ * Updates the inventory item specified by the route `id`.
+ *
+ * @param _params - Route parameters object containing `id`, the identifier of the inventory item to update
+ * @returns A JSON response body with a success `message` when the update is performed, or an `error` description on failure
+ */
 export async function PUT(
   _request: NextRequest,
   { params: _params }: { params: { id: string } }
@@ -39,6 +51,12 @@ export async function PUT(
   }
 }
 
+/**
+ * Delete an inventory item identified by the route `id`.
+ *
+ * @param _params - Route parameters object containing `id`, the inventory item identifier to delete
+ * @returns A JSON HTTP response: on success an object with a `message` confirming deletion; on failure an object with an `error` message and HTTP status 500
+ */
 export async function DELETE(
   _request: NextRequest,
   { params: _params }: { params: { id: string } }

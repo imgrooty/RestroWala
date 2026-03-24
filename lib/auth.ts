@@ -225,7 +225,13 @@ export const roleHierarchy: Record<string, number> = {
 };
 
 /**
- * Check if user role has sufficient permissions
+ * Determine whether a user's role meets or exceeds a required role level.
+ *
+ * Unknown or unmapped roles are treated as level 0.
+ *
+ * @param userRole - The role of the user to check
+ * @param requiredRole - The minimum role required to grant permission
+ * @returns `true` if `userRole`'s hierarchy level is greater than or equal to `requiredRole`'s level, `false` otherwise
  */
 export function hasPermission(userRole: UserRole, requiredRole: UserRole): boolean {
   return (roleHierarchy[userRole] ?? 0) >= (roleHierarchy[requiredRole] ?? 0);

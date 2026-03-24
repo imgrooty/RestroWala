@@ -90,7 +90,15 @@ export async function generateQRSvg(
 }
 
 /**
- * Generate QR code with custom branding
+ * Generate a QR code data URL for the provided URL, accepting optional branding parameters.
+ *
+ * The function accepts branding-related parameters but currently ignores them and returns a standard
+ * QR code data URL rendered at 400px width.
+ *
+ * @param url - The target URL to encode in the QR code
+ * @param _tableNumber - A table identifier (accepted for API compatibility; not used)
+ * @param _options - Optional branding hints: `floor`, `location`, and `logoUrl` (accepted but ignored)
+ * @returns A PNG data URL containing the generated QR code (rendered at 400px wide)
  */
 export async function generateBrandedQRCode(
   url: string,

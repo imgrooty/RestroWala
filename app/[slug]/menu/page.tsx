@@ -14,6 +14,16 @@ import { MenuItemWithRelations, Category } from '@/types/menu';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
+/**
+ * Client-side page component that loads and displays a restaurant menu for the current route slug.
+ *
+ * Fetches menu items and categories for the route `slug`, maintains local state for loading, search query,
+ * selected category, and the currently selected AR item. Filters menu items by category and text, shows
+ * a loading state while fetching, displays an empty state when no results match, provides an "In Cart"
+ * link with the current cart item count, and opens an AR/3D viewer for a selected item.
+ *
+ * @returns The rendered page as a JSX element
+ */
 export default function MenuPage() {
   const params = useParams();
   const slug = (params?.slug as string) || '';

@@ -16,6 +16,11 @@ type ToasterToast = ToastProps & {
 
 let count = 0
 
+/**
+ * Produce the next identifier string from an internal counter, wrapping at Number.MAX_SAFE_INTEGER.
+ *
+ * @returns The next counter value as a decimal string, incremented modulo `Number.MAX_SAFE_INTEGER`.
+ */
 function genId() {
   count = (count + 1) % Number.MAX_SAFE_INTEGER
   return count.toString()

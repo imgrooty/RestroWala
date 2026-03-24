@@ -18,6 +18,17 @@ import { startOfDay, endOfDay, subDays, format } from 'date-fns';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Provide order analytics for a restaurant over a specified date range.
+ *
+ * @param request - Incoming request whose query may include `startDate`, `endDate`, and `restaurantId`
+ * @returns A JSON HTTP response:
+ * - 200: analytics payload with `data.period`, `data.summary` (totals, revenue, peak hour, table turnover), `hourlyData`, `waiterPerformance`, and `statusTimeline`
+ * - 401: `{ error: 'Unauthorized' }` when the user is not authenticated
+ * - 403: `{ error: 'Forbidden' }` when the user lacks manager/admin role
+ * - 404: `{ error: 'No restaurant found' }` when no active restaurant is available and no `restaurantId` was provided
+ * - 500: `{ error: 'Failed to fetch order statistics' }` on unexpected failures
+ */
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

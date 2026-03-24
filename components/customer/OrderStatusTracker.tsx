@@ -14,6 +14,14 @@ interface OrderStatusTrackerProps {
   currentStatus: string;
 }
 
+/**
+ * Renders a UI that visually tracks an order's progress.
+ *
+ * @param _props - Props object for the component.
+ * @param _props.orderId - The unique identifier of the order to track.
+ * @param _props.currentStatus - The current status of the order (e.g., "pending", "shipped").
+ * @returns The rendered order status tracker element.
+ */
 export default function OrderStatusTracker(_props: OrderStatusTrackerProps) {
   return (
     <div className="order-status-tracker">

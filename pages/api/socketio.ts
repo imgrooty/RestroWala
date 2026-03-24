@@ -17,6 +17,14 @@ type NextApiResponseWithSocket = NextApiResponse & {
     };
 };
 
+/**
+ * Initializes a Socket.IO server on the underlying HTTP server for this Next.js API route if one is not already present.
+ *
+ * If a Socket.IO server is created, it is assigned to `res.socket.server.io`. The handler always responds with
+ * HTTP 200 and a JSON body `{ ok: true, initialized: true }`.
+ *
+ * @param res - Next.js response whose `socket.server` may receive an `io` property when initialization occurs
+ */
 export default function handler(_req: NextApiRequest, res: NextApiResponseWithSocket) {
     if (res.socket.server.io) {
         console.log('Socket is already running');

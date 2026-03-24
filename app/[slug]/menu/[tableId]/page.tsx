@@ -37,6 +37,13 @@ interface MenuResponse {
   }>;
 }
 
+/**
+ * Renders the restaurant menu page for a given table, including search, category and dietary filters, menu item cards, add-to-cart actions, and an AR viewer.
+ *
+ * The component reads `tableId` from route params, loads menu items and categories for the corresponding restaurant, and exposes UI controls to filter, search, add items to the cart, and preview 3D models when available.
+ *
+ * @returns A React element representing the menu page UI.
+ */
 export default function MenuPage() {
   const params = useParams();
   const tableId = (params?.tableId as string) || '';

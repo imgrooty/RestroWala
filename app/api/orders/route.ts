@@ -28,8 +28,16 @@ function generateOrderNumber(): string {
 }
 
 /**
- * GET /api/orders
- * Get orders based on user role
+ * Fetches orders according to query parameters and the caller's role, applying restaurant and role-based filters.
+ *
+ * Uses query parameters (status, statuses, tableId, userId, slug, restaurantId) and the authenticated session to scope results:
+ * - Guest requests require `tableId` and return only active orders (not COMPLETED).
+ * - CUSTOMER sees only their orders.
+ * - WAITER sees orders for their assigned tables (if any) or broader restaurant orders when none assigned.
+ * - KITCHEN_STAFF sees orders in PENDING, CONFIRMED, PREPARING, or READY states.
+ * - MANAGER and ADMIN have no additional role filtering.
+ *
+ * @returns A JSON response; on success the body is `{ data: orders }` where each order includes `items.menuItem` (id, name, image, price), `table` (id, number, capacity, floor, location), and `user` (id, name, email). On error returns a JSON object with an `error` message and an appropriate HTTP status code (401 for missing tableId for guests, 500 for server errors, etc.).
  */
 export async function GET(request: NextRequest) {
   try {
@@ -173,9 +181,11 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/orders
- * Create new order
- */
+ * Create a new order from the request body, allowing guest orders and returning the created order.
+ *
+ * Validates the request payload, verifies the table and requested menu items are available, calculates totals (including a fixed 10% tax), creates the order and its items, updates the table status to OCCUPIED, and emits socket events when possible.
+ *
+ * @returns On success, a JSON object with `{ message: 'Order created successfully', data: <created order record> }` where the created order includes its items (with menuItem), table, and user. On validation or menu availability failure returns a JSON error with status 400 and details; if the table is not found returns status 404; on unexpected server errors returns a JSON error with status 500.
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

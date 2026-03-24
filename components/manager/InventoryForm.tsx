@@ -18,6 +18,12 @@ interface InventoryFormProps {
   isEditing?: boolean;
 }
 
+/**
+ * Render a form UI for creating or editing an inventory item.
+ *
+ * @param _props - Component props: `initialData` (optional initial form values), `onSubmit` (handler called with submitted form data), and `isEditing` (whether the form is in edit mode).
+ * @returns A JSX `<form>` element containing inventory input fields and controls.
+ */
 export default function InventoryForm(_props: InventoryFormProps) {
   return (
     <form className="inventory-form">

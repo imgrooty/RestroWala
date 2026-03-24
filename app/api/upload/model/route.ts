@@ -9,6 +9,12 @@ export const dynamic = 'force-dynamic';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_EXTENSIONS = ['.glb', '.gltf'];
 
+/**
+ * Handles POST uploads of .glb and .gltf model files, optionally optimizes `.glb` files, saves the result to `public/models`, and returns the file URL with metadata.
+ *
+ * @param req - NextRequest containing a multipart form whose `file` field is the uploaded model (accepted extensions: `.glb`, `.gltf`)
+ * @returns JSON object. On success: `{ success: true, url: string, metadata: { fileSize: number, vertices: number, triangles: number, isCompressed: boolean } }`. On client validation failure: `{ error: string }` with HTTP 400. On server failure: `{ error: string }` with HTTP 500.
+ */
 export async function POST(req: NextRequest) {
     try {
         const formData = await req.formData();

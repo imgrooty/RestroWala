@@ -3,6 +3,12 @@
 import { LogoutButton } from "@/components/auth/logout-button";
 import { Coffee } from "lucide-react";
 
+/**
+ * Layout component that renders a sticky header with branding and places `children` in the page main area.
+ *
+ * @param children - Content to render inside the layout's main area
+ * @returns The React element containing the page wrapper, header (branding and logout), and the provided `children`
+ */
 export default function WaiterLayout({
   children,
 }: {

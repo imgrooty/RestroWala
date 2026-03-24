@@ -110,8 +110,17 @@ export async function GET(
 }
 
 /**
- * PATCH /api/tables/[id]
- * Update table (MANAGER, WAITER, CASHIER, CLEANER)
+ * Handle PATCH requests to update a table identified by `id`.
+ *
+ * Validates input and authorizes the caller: managers (MANAGER, ADMIN, SUPER_ADMIN) may update `number`, `capacity`, `floor`, `location`, and `waiterId`; staff (WAITER, CASHIER, CLEANER) may only update `status` and must include it. Ensures the table belongs to the caller's restaurant, prevents duplicate table numbers within a restaurant, performs the update, and emits a real-time status change event when the table's status changes.
+ *
+ * @returns A JSON response containing either `{ message, table }` on success (HTTP 200) or an error object with an appropriate HTTP status:
+ * - 400 for validation errors or invalid staff requests,
+ * - 401 if unauthenticated,
+ * - 403 for authorization failures,
+ * - 404 if the table is not found,
+ * - 409 if the requested table number conflicts with another table,
+ * - 500 for unexpected server errors.
  */
 export async function PATCH(
   request: NextRequest,

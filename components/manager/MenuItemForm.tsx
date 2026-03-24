@@ -18,6 +18,12 @@ interface MenuItemFormProps {
   isEditing?: boolean;
 }
 
+/**
+ * Render a menu item form for creating or editing menu items.
+ *
+ * @param _props - Component props containing optional `initialData`, an `onSubmit` callback, and an optional `isEditing` flag
+ * @returns A React `<form>` element containing the menu item form UI
+ */
 export default function MenuItemForm(_props: MenuItemFormProps) {
   return (
     <form className="menu-item-form">

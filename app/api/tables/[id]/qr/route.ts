@@ -15,8 +15,10 @@ import crypto from 'crypto';
 import QRCode from 'qrcode';
 
 /**
- * POST /api/tables/[id]/qr
- * Regenerate QR code for table
+ * Regenerates a table's QR code and returns the updated table record along with QR data.
+ *
+ * @param params - The route parameters object containing the table `id`.
+ * @returns A JSON response containing `message`, the updated `table` record, `qrDataUrl`, and `qrCodeUrl` on success. On error returns a JSON response with an `error` message and an appropriate HTTP status: `401`, `403`, `404`, or `500`.
  */
 export async function POST(
   _request: NextRequest,
@@ -89,8 +91,17 @@ export async function POST(
 }
 
 /**
- * GET /api/tables/[id]/qr
- * Get QR code for table
+ * Serve a table's QR code in PNG, SVG, or JSON (data URL) format.
+ *
+ * When `format=png` returns a PNG image response with `Content-Type: image/png`
+ * and `Content-Disposition: inline; filename="table-<number>-qr.png"`. When
+ * `format=svg` returns an SVG response with `Content-Type: image/svg+xml`
+ * and `Content-Disposition: inline; filename="table-<number>-qr.svg"`. For any
+ * other `format` returns a JSON object containing the table record, the URL
+ * encoded in the QR (`qrCodeUrl`), and a data URL of the generated QR (`qrDataUrl`).
+ *
+ * @param params.id - The ID of the table whose QR code should be returned
+ * @returns For `png`: a PNG binary response; for `svg`: an SVG text response; otherwise a JSON object with `table`, `qrCodeUrl`, and `qrDataUrl`
  */
 export async function GET(
   request: NextRequest,

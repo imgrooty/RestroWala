@@ -16,6 +16,12 @@ import { startOfDay, endOfDay, subDays, format } from 'date-fns';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Handle GET requests to /api/analytics/popular-items and return analytics for the most-ordered menu items filtered by user role, restaurant, and date range.
+ *
+ * @param request - The incoming NextRequest containing query parameters: `limit`, `startDate`, `endDate`, and `restaurantId`
+ * @returns A JSON object with `data.items` (array of top menu items each containing `id`, `name`, `category`, `image`, `quantity`, `revenue`, and `price`) and `data.summary` (object with `totalQuantity`, `totalRevenue`, `itemCount`, and `period` with `startDate` and `endDate` formatted as `yyyy-MM-dd`)
+ */
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

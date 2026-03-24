@@ -8,6 +8,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Retrieve a category by ID.
+ *
+ * @param _params - Route parameters object with `id` of the category to fetch.
+ * @returns A JSON HTTP response with `data` set to the category when successful, or an `error` message and HTTP 500 status on failure.
+ */
 export async function GET(
   _request: NextRequest,
   { params: _params }: { params: { id: string } }
@@ -23,6 +29,12 @@ export async function GET(
   }
 }
 
+/**
+ * Handle HTTP PUT requests to update a category identified by id.
+ *
+ * @param _params - Route parameters object; `_params.params.id` is the category id to update
+ * @returns A JSON response containing a `message` on success; on failure a JSON `{ error }` payload is returned with HTTP status 500
+ */
 export async function PUT(
   _request: NextRequest,
   { params: _params }: { params: { id: string } }
@@ -39,6 +51,12 @@ export async function PUT(
   }
 }
 
+/**
+ * Deletes the category identified by the provided `id`. (MANAGER role required)
+ *
+ * @param _params - Object containing route parameters; must include `id`, the category identifier to delete
+ * @returns A JSON response: on success `{ message: 'Delete category' }`; on failure `{ error: 'Failed to delete category' }` with HTTP status 500
+ */
 export async function DELETE(
   _request: NextRequest,
   { params: _params }: { params: { id: string } }

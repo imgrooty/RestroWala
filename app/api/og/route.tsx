@@ -3,6 +3,17 @@ import { getRestaurantBySlug } from '@/lib/restaurant-fetcher'
 
 export const runtime = 'nodejs'
 
+/**
+ * Generate an Open Graph (OG) image for the platform or for a specific restaurant identified by the `slug` query parameter.
+ *
+ * If `slug` is missing or invalid, returns a default 1200×630 platform OG image with RestroWala branding. If `slug` is valid, attempts to fetch the restaurant by slug and:
+ * - returns a 1200×630 restaurant-specific OG image showing the restaurant logo (or a single-letter fallback), name, description (or a generated fallback), and a RestroWala badge when the restaurant exists;
+ * - returns a `Response` with body `'Restaurant not found'` and status `404` when no restaurant is found.
+ *
+ * On unexpected errors, returns a `Response` with body `'Failed to generate the image'` and status `500`.
+ *
+ * @returns An `ImageResponse` for either the platform or a restaurant when generation succeeds; a `Response` with status `404` when the restaurant is not found; or a `Response` with status `500` on failure.
+ */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)

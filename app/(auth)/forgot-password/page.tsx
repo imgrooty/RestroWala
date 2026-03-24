@@ -15,6 +15,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 
+/**
+ * Render a "Forgot Password" UI that collects an email, submits a password-recovery request, and displays either the form or a post-submission confirmation.
+ *
+ * The component validates the email (required and basic email pattern), disables inputs while submitting, posts `{ email }` to `/api/auth/forgot-password`, and shows success or error feedback. On success it displays a confirmation view containing the submitted email and triggers a success toast; on failure it surfaces an inline error message.
+ *
+ * @returns A React element that renders the forgot-password form or a "check your email" confirmation view
+ */
 export default function ForgotPasswordPage() {
   const { toast } = useToast();
   const [email, setEmail] = useState('');

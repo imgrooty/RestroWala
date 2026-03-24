@@ -48,6 +48,27 @@ export async function GET() {
   }
 }
 
+/**
+ * Create a new staff member for the authenticated user's restaurant.
+ *
+ * Only users with the `MANAGER` or `ADMIN` role may create staff. Expects a JSON
+ * request body containing the new user's details; `name`, `email`, `password`,
+ * and `role` are required, `phone` is optional.
+ *
+ * @param request - NextRequest whose JSON body must include:
+ *   - `name`: display name for the staff member
+ *   - `email`: unique email address for the staff member
+ *   - `password`: plaintext password to be hashed before storage
+ *   - `role`: staff role (e.g., waiter, kitchen staff, cashier, manager)
+ *   - `phone` (optional): contact phone number
+ * @returns On success, an object with `message: 'Staff member created'` and
+ *   `data` containing the created user's public fields:
+ *   `{ id, name, email, role, phone, isActive, restaurantId, createdAt, updatedAt }`.
+ *   Possible error responses:
+ *   - 400: missing required fields or email already exists
+ *   - 401: unauthorized when caller is not a manager/admin or not authenticated
+ *   - 500: server error when creation fails
+ */
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

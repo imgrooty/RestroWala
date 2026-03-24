@@ -17,6 +17,12 @@ interface CartItemProps {
   onRemove: (itemId: string) => void;
 }
 
+/**
+ * Renders a container for a single shopping cart item (placeholder implementation).
+ *
+ * @param _props - Component props conforming to `CartItemProps`.
+ * @returns A JSX element containing the cart item container.
+ */
 export default function CartItem(_props: CartItemProps) {
   return (
     <div className="cart-item">

@@ -7,6 +7,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Returns inventory items whose quantity is below their configured minimum threshold.
+ *
+ * @returns On success, a JSON response with `data` containing an array of low-stock items. On failure, a JSON response with `error: 'Failed to fetch low stock items'` and HTTP status 500.
+ */
 export async function GET(_request: NextRequest) {
   try {
     // Query items where quantity < minQuantity

@@ -8,6 +8,14 @@ import { Input } from '@/components/ui/input';
 import OrdersTable from '@/components/manager/OrdersTable';
 import { useToast } from '@/components/ui/use-toast';
 
+/**
+ * Renders the manager "Orders" page with search, polling, and an orders table.
+ *
+ * Polls the server every 30 seconds to refresh orders, shows a centered loading placeholder while fetching,
+ * and filters displayed orders by customer name, order number, or table number using the search input.
+ *
+ * @returns The component's JSX element representing the manager orders UI.
+ */
 export default function ManagerOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

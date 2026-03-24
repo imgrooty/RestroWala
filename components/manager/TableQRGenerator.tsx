@@ -27,6 +27,21 @@ interface TableQRGeneratorProps {
   };
 }
 
+/**
+ * Generate a QR image for the table URL, store its data URL for display, and draw a canvas copy for downloads.
+ */
+
+/**
+ * Compose a high-resolution PNG containing the QR code and table details, then trigger its download.
+ */
+
+/**
+ * Open a printable window containing the QR image and table details, invoke the print dialog, and close the window after printing.
+ */
+
+/**
+ * Request a new unique QR code for the table from the API, notify on success, and reload the page.
+ */
 export default function TableQRGenerator({ table }: TableQRGeneratorProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);

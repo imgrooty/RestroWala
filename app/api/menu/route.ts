@@ -15,6 +15,18 @@ import { authOptions } from '@/lib/auth';
 import { menuItemSchema } from '@/lib/validations';
 import { Prisma } from '@prisma/client';
 
+/**
+ * Retrieves menu items and active categories filtered by query parameters and restaurant scope.
+ *
+ * Recognizes query parameters on the request URL to filter results: `categoryId`, `search`, `isAvailable`,
+ * `isVegetarian`, `isVegan`, `isGlutenFree`, `minPrice`, `maxPrice`, `slug`, and `restaurantId`. If the
+ * authenticated session includes `session.user.restaurantId`, that restaurant is always used. If no
+ * restaurant can be resolved, returns empty `data` and `categories` arrays.
+ *
+ * @param request - The incoming NextRequest; its URL query parameters control filtering and scoping.
+ * @returns An object with `data` (the list of matching menu items, each including its category) and
+ *          `categories` (active categories for the resolved restaurant). On failure, returns an error
+ *          object and an HTTP 500 status.
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

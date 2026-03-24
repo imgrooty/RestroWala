@@ -27,6 +27,14 @@ import {
 } from '@/lib/orderStateMachine';
 import { apiClient } from '@/lib/api-client';
 
+/**
+ * Render the kitchen orders dashboard and manage live order updates.
+ *
+ * Subscribes to order events, fetches and filters orders for relevant statuses,
+ * and provides handlers for updating order status and navigating to order details.
+ *
+ * @returns The React element for a four-column kitchen order board (Incoming, Buffered, Thermal Process, Output Ready).
+ */
 export default function KitchenOrdersPage() {
   const router = useRouter();
   const { toast } = useToast();

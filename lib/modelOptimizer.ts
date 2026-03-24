@@ -1,4 +1,3 @@
-
 /**
  * Interface for model metadata
  */
@@ -10,9 +9,10 @@ export interface ModelMetadata {
 }
 
 /**
- * Optimizes a GLB file using gltf-pipeline
- * @param buffer The file buffer to optimize
- * @returns Optimized buffer and metadata
+ * Produces an optimized GLB buffer and associated metadata.
+ *
+ * @param buffer - The input GLB file contents
+ * @returns An object whose `data` is the optimized GLB `Buffer` (or the original `buffer` if optimization fails) and whose `metadata` contains `fileSize` in bytes, placeholder `vertices` and `triangles` counts, and `isCompressed` indicating whether Draco compression was applied
  */
 export async function optimizeModel(buffer: Buffer): Promise<{ data: Buffer; metadata: ModelMetadata }> {
     const options = {

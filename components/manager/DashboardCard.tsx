@@ -21,6 +21,17 @@ interface DashboardCardProps {
   className?: string;
 }
 
+/**
+ * Render a compact dashboard metric card showing a title, main value, icon, and optional trend label.
+ *
+ * @param title - The card title displayed in the header
+ * @param value - The primary metric shown prominently
+ * @param icon - Visual element rendered in the header (e.g., an icon or avatar)
+ * @param trend - Numeric trend value; accepted by the props but not used by the component
+ * @param trendLabel - Optional label displayed beneath the value (e.g., comparison or percentage)
+ * @param className - Optional additional CSS classes applied to the card container
+ * @returns A React element representing the dashboard card
+ */
 export default function DashboardCard({
   title,
   value,

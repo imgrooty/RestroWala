@@ -8,6 +8,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Retrieve a single order by its ID.
+ *
+ * @param params - Route parameters containing `id` of the order to fetch.
+ * @returns A JSON response with `data` set to the order object (or `null` if not found); on failure returns a JSON response with `error` and HTTP status 500.
+ */
 export async function GET(
   _request: NextRequest,
   { params: _params }: { params: { id: string } }
@@ -23,6 +29,12 @@ export async function GET(
   }
 }
 
+/**
+ * Handle updating an order identified by `params.id` and respond with JSON.
+ *
+ * @param _params - Route parameters object containing the order `id`.
+ * @returns A NextResponse whose JSON body is `{ message: 'Update order' }` on success, or `{ error: 'Failed to update order' }` with HTTP 500 status on failure.
+ */
 export async function PUT(
   _request: NextRequest,
   { params: _params }: { params: { id: string } }
@@ -39,6 +51,12 @@ export async function PUT(
   }
 }
 
+/**
+ * Cancel an order specified by the route `id` parameter.
+ *
+ * @param _params - Route parameters object; expects `id` as the order identifier
+ * @returns A JSON response: on success `{ message: 'Cancel order' }`; on failure `{ error: 'Failed to cancel order' }` with HTTP status 500
+ */
 export async function DELETE(
   _request: NextRequest,
   { params: _params }: { params: { id: string } }

@@ -9,6 +9,15 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { toast } from '@/components/ui/use-toast';
 import { Package, Plus, Save, Trash2, Box, Loader2 } from 'lucide-react';
 
+/**
+ * Render the Menu Management page for viewing, adding, and removing menu items with optional 3D asset support.
+ *
+ * The component loads menu items from the server, displays them in a responsive grid, and provides a form to add new items
+ * (including uploading 3D assets). It shows loading and submitting states, displays success and error toasts, and allows
+ * optimistic removal of items from the UI (server-side DELETE is noted as TODO).
+ *
+ * @returns A React element representing the menu management UI.
+ */
 export default function MenuManagementPage() {
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);

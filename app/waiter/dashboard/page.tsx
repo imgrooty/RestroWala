@@ -19,6 +19,13 @@ import { useOrders } from '@/hooks/useOrders';
 import { useToast } from '@/components/ui/use-toast';
 import { TableStatus } from '@/types/prisma';
 
+/**
+ * Render the waiter dashboard page showing floor table cards, a real-time orders feed, and summary statistics.
+ *
+ * The component retrieves the current session for a greeting, fetches table state on mount, and subscribes to auto-refreshing orders.
+ *
+ * @returns The React element for the waiter dashboard page.
+ */
 export default function WaiterDashboardPage() {
   const { data: session } = useSession();
   const [tables, setTables] = useState<any[]>([]);

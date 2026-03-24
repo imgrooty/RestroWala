@@ -41,6 +41,21 @@ export async function GET(_request: NextRequest) {
   }
 }
 
+/**
+ * Create a new table for the authenticated user's restaurant.
+ *
+ * Accepts a JSON body with required fields `number` and `capacity` (parsable as integers)
+ * and optional `floor`, `location`, `status`, and `waiterId`. Only users with role
+ * `MANAGER` or `ADMIN` may create tables; the handler associates the new table with
+ * the restaurant from the user's session. The request is validated and the table number
+ * must be unique within the restaurant.
+ *
+ * @param request - NextRequest whose JSON body must include `number` and `capacity` and may include `floor`, `location`, `status`, and `waiterId`
+ * @returns A NextResponse containing JSON:
+ * - on success: `{ message: 'Table created', data: table }` with HTTP 201
+ * - on client errors: an `{ error: string }` (or `{ error: 'Validation failed', details: ... }`) with HTTP 400 or 401
+ * - on server error: `{ error: 'Failed to create table' }` with HTTP 500
+ */
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

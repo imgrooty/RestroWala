@@ -16,6 +16,12 @@ interface ModalProps {
   children: React.ReactNode;
 }
 
+/**
+ * Renders a modal container when open.
+ *
+ * @param isOpen - Whether the modal should be rendered and visible
+ * @returns A React element containing the modal when `isOpen` is `true`, `null` otherwise
+ */
 export default function Modal({ isOpen }: ModalProps) {
   if (!isOpen) return null;
 

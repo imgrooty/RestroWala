@@ -44,6 +44,18 @@ interface Payment {
     } | null;
 }
 
+/**
+ * Render the Billing & Plans page UI, including active subscriptions and revenue tracking.
+ *
+ * Fetches subscriptions, payments, and global billing metrics on mount and displays:
+ * - An "Active Subscriptions" table with plan, status, start date, and manage actions.
+ * - Metric cards for total revenue, transaction count, and average ticket.
+ * - A recent payments table with transaction details and status badges.
+ *
+ * API errors are surfaced via toasts.
+ *
+ * @returns The Billing & Plans page as a React element
+ */
 export default function BillingPage() {
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
     const [payments, setPayments] = useState<Payment[]>([]);
