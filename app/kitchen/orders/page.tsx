@@ -145,9 +145,9 @@ export default function KitchenOrdersPage() {
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-3 py-1 rounded-full text-[10px] font-black text-primary uppercase tracking-[0.2em] animate-pulse">
             <ChefHat className="h-3 w-3" /> Kitchen Intelligence Active
           </div>
-          <h1 className="text-6xl font-black text-white tracking-tighter italic">KDS <span className="text-slate-700 leading-none">ALPHA</span></h1>
+          <h1 className="text-6xl font-black text-white tracking-tighter italic">KDS <span className="text-slate-700 leading-none">LIVE</span></h1>
           <p className="text-slate-500 font-bold text-lg uppercase tracking-widest">
-            Synchronized • {orders.length} ACTIVE COMMANDS
+            Live Feed • {orders.length} ACTIVE ORDERS
           </p>
         </div>
 
@@ -178,7 +178,7 @@ export default function KitchenOrdersPage() {
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-black text-rose-400 flex items-center gap-3 italic uppercase tracking-tighter">
                   <Clock className="h-7 w-7" />
-                  Incoming
+                  Received
                 </h2>
                 <Badge className="bg-rose-500 text-white border-none px-4 py-1.5 rounded-full font-black text-sm shadow-lg shadow-rose-500/20">
                   {ordersByStatus.PENDING.length}
@@ -192,6 +192,7 @@ export default function KitchenOrdersPage() {
                       userRole={UserRole.KITCHEN_STAFF}
                       onStatusChange={handleStatusChange}
                       onViewDetails={handleViewDetails}
+                      variant="dark"
                     />
                   </div>
                 ))}
@@ -210,7 +211,7 @@ export default function KitchenOrdersPage() {
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-black text-indigo-400 flex items-center gap-3 italic uppercase tracking-tighter">
                   <Clock className="h-7 w-7" />
-                  Buffered
+                  Acknowledged
                 </h2>
                 <Badge className="bg-indigo-500 text-white border-none px-4 py-1.5 rounded-full font-black text-sm shadow-lg shadow-indigo-500/20">
                   {ordersByStatus.CONFIRMED.length}
@@ -224,6 +225,7 @@ export default function KitchenOrdersPage() {
                       userRole={UserRole.KITCHEN_STAFF}
                       onStatusChange={handleStatusChange}
                       onViewDetails={handleViewDetails}
+                      variant="dark"
                     />
                   </div>
                 ))}
@@ -242,7 +244,7 @@ export default function KitchenOrdersPage() {
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-black text-orange-400 flex items-center gap-3 italic uppercase tracking-tighter">
                   <ChefHat className="h-7 w-7" />
-                  Thermal Process
+                  Preparing
                 </h2>
                 <Badge className="bg-orange-500 text-white border-none px-4 py-1.5 rounded-full font-black text-sm shadow-lg shadow-orange-500/20 animate-pulse">
                   {ordersByStatus.PREPARING.length}
@@ -256,6 +258,7 @@ export default function KitchenOrdersPage() {
                       userRole={UserRole.KITCHEN_STAFF}
                       onStatusChange={handleStatusChange}
                       onViewDetails={handleViewDetails}
+                      variant="dark"
                     />
                   </div>
                 ))}
@@ -274,7 +277,7 @@ export default function KitchenOrdersPage() {
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-black text-emerald-400 flex items-center gap-3 italic uppercase tracking-tighter">
                   <CheckCircle2 className="h-7 w-7" />
-                  Output Ready
+                  Prepared
                 </h2>
                 <Badge className="bg-emerald-500 text-white border-none px-4 py-1.5 rounded-full font-black text-sm shadow-lg shadow-emerald-500/20">
                   {ordersByStatus.READY.length}
@@ -288,6 +291,7 @@ export default function KitchenOrdersPage() {
                       userRole={UserRole.KITCHEN_STAFF}
                       onStatusChange={handleStatusChange}
                       onViewDetails={handleViewDetails}
+                      variant="dark"
                     />
                   </div>
                 ))}

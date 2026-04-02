@@ -3,7 +3,7 @@
  * PUT /api/menu/[id] - Update menu item (MANAGER only)
  * PATCH /api/menu/[id] - Update specific fields (MANAGER, WAITER)
  * DELETE /api/menu/[id] - Delete menu item (MANAGER only)
- * 
+ *
  * Single menu item operations
  */
 
@@ -151,3 +151,4 @@ export async function DELETE(
     );
   }
 }
+

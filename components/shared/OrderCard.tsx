@@ -40,6 +40,8 @@ interface OrderCardProps {
   onStatusChange?: (orderId: string, newStatus: OrderStatus) => void;
   onViewDetails?: (orderId: string) => void;
   showActions?: boolean;
+  /** Use 'dark' for dark-background dashboards like the kitchen display */
+  variant?: 'light' | 'dark';
 }
 
 export default function OrderCard({
@@ -48,6 +50,7 @@ export default function OrderCard({
   onStatusChange,
   onViewDetails,
   showActions = true,
+  variant = 'light',
 }: OrderCardProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const statusInfo = STATUS_INFO[order.status];
@@ -70,6 +73,18 @@ export default function OrderCard({
   };
 
   const getPriorityColor = () => {
+    if (variant === 'dark') {
+      switch (priority) {
+        case 'urgent':
+          return 'border-red-500 bg-slate-900';
+        case 'high':
+          return 'border-orange-500 bg-slate-900';
+        case 'medium':
+          return 'border-yellow-500 bg-slate-900';
+        default:
+          return 'border-slate-700 bg-slate-800';
+      }
+    }
     switch (priority) {
       case 'urgent':
         return 'border-red-500 bg-red-50';
@@ -92,12 +107,14 @@ export default function OrderCard({
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-lg">Order #{order.orderNumber}</h3>
+            <h3 className={`font-semibold text-lg ${variant === 'dark' ? 'text-white' : ''}`}>
+              Order #{order.orderNumber}
+            </h3>
             {isUrgent && (
               <AlertCircle className="h-4 w-4 text-red-500 animate-pulse" />
             )}
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className={`flex items-center gap-2 text-sm ${variant === 'dark' ? 'text-slate-400' : 'text-muted-foreground'}`}>
             <span>Table {order.table.number}</span>
             {order.table.floor && <span>• {order.table.floor}</span>}
             {order.user && <span>• {order.user.name}</span>}
@@ -107,7 +124,11 @@ export default function OrderCard({
         {showActions && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${variant === 'dark' ? 'text-slate-400 hover:text-white hover:bg-slate-700' : ''}`}
+              >
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -141,7 +162,10 @@ export default function OrderCard({
           <span>{waitMinutes}m</span>
         </div>
         {priority !== 'low' && (
-          <Badge variant="outline" className="text-xs capitalize">
+          <Badge
+            variant="outline"
+            className={`text-xs capitalize ${variant === 'dark' ? 'border-slate-600 text-slate-300' : ''}`}
+          >
             {priority}
           </Badge>
         )}
@@ -152,26 +176,28 @@ export default function OrderCard({
         {order.items.slice(0, 3).map((item) => (
           <div key={item.id} className="flex items-center justify-between text-sm">
             <span className="flex items-center gap-2">
-              <span className="font-medium">{item.quantity}x</span>
-              <span>{item.menuItem.name}</span>
+              <span className={`font-medium ${variant === 'dark' ? 'text-white' : ''}`}>{item.quantity}x</span>
+              <span className={variant === 'dark' ? 'text-slate-300' : ''}>{item.menuItem.name}</span>
             </span>
-            <span className="text-muted-foreground">
+            <span className={variant === 'dark' ? 'text-slate-400' : 'text-muted-foreground'}>
               ${item.subtotal.toFixed(2)}
             </span>
           </div>
         ))}
         {order.items.length > 3 && (
-          <div className="text-xs text-muted-foreground">
+          <div className={`text-xs ${variant === 'dark' ? 'text-slate-500' : 'text-muted-foreground'}`}>
             +{order.items.length - 3} more items
           </div>
         )}
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-3 border-t">
+      <div className={`flex items-center justify-between pt-3 border-t ${variant === 'dark' ? 'border-slate-700' : ''}`}>
         <div className="text-sm">
-          <div className="font-semibold">${order.finalAmount.toFixed(2)}</div>
-          <div className="text-muted-foreground">
+          <div className={`font-semibold ${variant === 'dark' ? 'text-white' : ''}`}>
+            ${order.finalAmount.toFixed(2)}
+          </div>
+          <div className={variant === 'dark' ? 'text-slate-500' : 'text-muted-foreground'}>
             {format(new Date(order.createdAt), 'MMM d, h:mm a')}
           </div>
         </div>
@@ -183,10 +209,10 @@ export default function OrderCard({
               <Button
                 key={status}
                 size="sm"
-                variant="outline"
+                variant={variant === 'dark' ? 'default' : 'outline'}
                 onClick={() => handleStatusChange(status)}
                 disabled={isUpdating}
-                className="text-xs"
+                className={`text-xs ${variant === 'dark' ? 'bg-orange-500 hover:bg-orange-400 text-white border-none' : ''}`}
               >
                 {STATUS_INFO[status].label}
               </Button>
@@ -197,8 +223,10 @@ export default function OrderCard({
 
       {/* Notes */}
       {order.notes && (
-        <div className="mt-3 pt-3 border-t">
-          <p className="text-xs text-muted-foreground italic">{order.notes}</p>
+        <div className={`mt-3 pt-3 border-t ${variant === 'dark' ? 'border-slate-700' : ''}`}>
+          <p className={`text-xs italic ${variant === 'dark' ? 'text-slate-400' : 'text-muted-foreground'}`}>
+            {order.notes}
+          </p>
         </div>
       )}
     </div>
